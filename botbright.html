@@ -1,0 +1,2942 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Botbright</title>
+<style>
+:root {
+  --bg: #f5f5f5;
+  --panel: #ffffff;
+  --panel-2: #ececec;
+  --text: #1a1a1a;
+  --muted: #666;
+  --border: #cccccc;
+  --accent: #3a7fc7;
+  --accent-2: #2a5f9e;
+  --tile-top: #c4c4c4;
+  --tile-light: #a8a8a8;
+  --tile-dark: #828282;
+  --tile-edge: #6a6a6a;
+  --goal-top: #4a9ed8;
+  --goal-light: #3a86bc;
+  --goal-dark: #2a6a99;
+  --lit-top: #f5cc40;
+  --lit-light: #d8b035;
+  --lit-dark: #b89022;
+  --bot-body: #e0e0e0;
+  --bot-edge: #888;
+  --bot-eye: #1a1a1a;
+  --bot-panel: #a8a8a8;
+  --danger: #d04545;
+  --shadow: rgba(0,0,0,0.15);
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1a1a1a;
+    --panel: #2a2a2a;
+    --panel-2: #232323;
+    --text: #eaeaea;
+    --muted: #999;
+    --border: #444;
+    --accent: #4a9ed8;
+    --accent-2: #6ab0e8;
+    --tile-top: #6e6e6e;
+    --tile-light: #525252;
+    --tile-dark: #3c3c3c;
+    --tile-edge: #2a2a2a;
+    --goal-top: #3a7fc7;
+    --goal-light: #2c6aa6;
+    --goal-dark: #1f4f7f;
+    --lit-top: #f0c040;
+    --lit-light: #c89a30;
+    --lit-dark: #99751e;
+    --bot-body: #d8d8d8;
+    --bot-edge: #6a6a6a;
+    --bot-eye: #0a0a0a;
+    --bot-panel: #a8a8a8;
+    --danger: #e06060;
+    --shadow: rgba(0,0,0,0.4);
+  }
+}
+* { box-sizing: border-box; }
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  overflow: hidden;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+.screen {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: row;
+}
+.hidden { display: none !important; }
+
+/* Start screen */
+#start-screen {
+  flex-direction: column;
+  align-items: center;
+  padding: 24px;
+  overflow-y: auto;
+}
+#start-screen h1 {
+  font-size: 56px;
+  font-weight: 800;
+  letter-spacing: 4px;
+  margin: 24px 0 8px;
+  background: linear-gradient(135deg, var(--accent), var(--lit-top));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+#start-screen .tagline {
+  color: var(--muted);
+  margin-bottom: 24px;
+  font-size: 16px;
+}
+#start-screen .top-bar {
+  width: 100%;
+  max-width: 1200px;
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 16px;
+}
+#level-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 16px;
+  width: 100%;
+  max-width: 1200px;
+  padding-bottom: 24px;
+}
+.level-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px;
+  cursor: pointer;
+  transition: transform 0.1s, box-shadow 0.1s;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.level-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px var(--shadow);
+}
+.level-card canvas {
+  width: 100%;
+  height: 120px;
+  background: var(--panel-2);
+  border-radius: 8px;
+}
+.level-card .name {
+  font-weight: 700;
+  font-size: 14px;
+}
+.level-card .desc {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+/* Buttons */
+button, .btn {
+  background: var(--panel);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 14px;
+  cursor: pointer;
+  font-family: inherit;
+}
+button:hover { background: var(--panel-2); }
+button.primary {
+  background: var(--accent);
+  color: white;
+  border-color: var(--accent-2);
+}
+button.primary:hover { background: var(--accent-2); }
+button.danger {
+  background: var(--danger);
+  color: white;
+  border-color: var(--danger);
+}
+button.active {
+  background: var(--accent);
+  color: white;
+  border-color: var(--accent-2);
+}
+
+/* Game screen */
+#game-screen { flex-direction: row; }
+#game-canvas {
+  flex: 1;
+  height: 100%;
+  display: block;
+  touch-action: none;
+}
+#game-sidebar {
+  width: 380px;
+  height: 100%;
+  background: var(--panel);
+  border-left: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  padding: 12px;
+  gap: 10px;
+}
+#editor-sidebar {
+  width: 320px;
+  height: 100%;
+  background: var(--panel);
+  border-left: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  padding: 12px;
+  gap: 8px;
+}
+#editor-canvas {
+  flex: 1;
+  height: 100%;
+  display: block;
+  touch-action: none;
+}
+
+#game-sidebar h2 {
+  margin: 0 0 4px 0;
+  font-size: 18px;
+}
+#game-sidebar #level-desc {
+  margin: 0 0 8px 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+.memory-section {
+  background: var(--panel-2);
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+.memory-section > label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  display: block;
+  margin-bottom: 6px;
+}
+.slot-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+}
+.slot {
+  aspect-ratio: 1;
+  background: var(--bg);
+  border: 2px dashed var(--border);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+.slot.drop-target {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 20%, var(--bg));
+}
+.slot.executing {
+  border-style: solid;
+  border-color: var(--lit-top);
+  box-shadow: 0 0 8px var(--lit-top);
+}
+.tile {
+  width: 100%;
+  height: 100%;
+  border-radius: 6px;
+  background: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: grab;
+  color: white;
+  position: relative;
+  border: 1px solid var(--accent-2);
+  touch-action: none;
+}
+.tile.dragging {
+  opacity: 0.4;
+}
+.tile svg {
+  width: 70%;
+  height: 70%;
+  pointer-events: none;
+}
+.tile[data-instr="LIGHT"] { background: var(--lit-top); border-color: var(--lit-dark); color: #222; }
+.tile[data-instr="JUMP"] { background: #6ab84a; border-color: #498f30; }
+.tile[data-instr="LEFT"] { background: #b86adc; border-color: #8f49b0; }
+.tile[data-instr="RIGHT"] { background: #dc6a98; border-color: #b04970; }
+.tile[data-instr="F1"] { background: #50a0a0; border-color: #387575; }
+.tile[data-instr="F2"] { background: #a07050; border-color: #75503a; }
+
+#palette {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  padding: 8px;
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+#palette .slot {
+  border-style: solid;
+  background: transparent;
+}
+.controls {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.controls label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  flex: 1;
+}
+.controls input[type=range] { flex: 1; }
+
+#ghost-tile {
+  position: fixed;
+  pointer-events: none;
+  width: 60px;
+  height: 60px;
+  z-index: 1000;
+  opacity: 0.85;
+  display: none;
+}
+
+/* Overlays */
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  z-index: 100;
+}
+.overlay .panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 32px;
+  text-align: center;
+  min-width: 280px;
+  box-shadow: 0 8px 32px var(--shadow);
+}
+.overlay h2 { margin: 0 0 8px 0; }
+.overlay .actions { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 16px; }
+
+/* Editor */
+#editor-sidebar h3 {
+  font-size: 13px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 8px 0 4px;
+  letter-spacing: 1px;
+}
+#editor-sidebar label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--muted);
+}
+#editor-sidebar input[type=text],
+#editor-sidebar input[type=number] {
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 8px;
+  font-size: 14px;
+  font-family: inherit;
+}
+.editor-row { display: flex; gap: 6px; flex-wrap: wrap; }
+#levels-list {
+  max-height: 200px;
+  overflow-y: auto;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg);
+}
+#levels-list .item {
+  padding: 6px 10px;
+  cursor: pointer;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+#levels-list .item:last-child { border-bottom: none; }
+#levels-list .item:hover { background: var(--panel-2); }
+#levels-list .item.active { background: var(--accent); color: white; }
+#tools {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 4px;
+}
+#tools button { padding: 6px 4px; font-size: 12px; }
+#tools button.active { background: var(--accent); color: white; border-color: var(--accent-2); }
+
+.resize-handle {
+  width: 6px;
+  background: var(--border);
+  cursor: ew-resize;
+  flex-shrink: 0;
+  touch-action: none;
+  transition: background 0.15s;
+}
+.resize-handle:hover, .resize-handle.dragging { background: var(--accent); }
+
+/* Collapsible sections */
+.collapse-section { margin: 0; }
+.collapse-section > summary {
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 6px 4px;
+  list-style: none;
+  user-select: none;
+  border-radius: 6px;
+}
+.collapse-section > summary:hover { background: var(--panel-2); }
+.collapse-section > summary::-webkit-details-marker { display: none; }
+.collapse-section > summary::before {
+  content: '▸';
+  display: inline-block;
+  margin-right: 6px;
+  transition: transform 0.15s;
+}
+.collapse-section[open] > summary::before { transform: rotate(90deg); }
+.collapse-section > .memory-section { margin-top: 4px; }
+
+/* Color pickers */
+.color-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 3px 0;
+  font-size: 13px;
+}
+.color-row > span { color: var(--muted); }
+.color-row input[type=color] {
+  width: 44px;
+  height: 26px;
+  padding: 0;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  cursor: pointer;
+  border-radius: 4px;
+}
+.color-row select {
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 4px 6px;
+  font-family: inherit;
+  font-size: 13px;
+}
+
+/* Camera controls grid */
+.cam-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+}
+.cam-grid button {
+  aspect-ratio: 1;
+  font-size: 20px;
+  padding: 0;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Language picker */
+.lang-picker {
+  width: 100%;
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 8px;
+  font-size: 14px;
+  font-family: inherit;
+  cursor: pointer;
+}
+#start-screen .lang-picker { width: auto; min-width: 160px; }
+#start-screen .top-bar { gap: 8px; align-items: center; }
+
+/* Footer */
+#app-footer {
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  background: var(--panel);
+  border-top: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 11px;
+  text-align: center;
+  padding: 4px 8px;
+  z-index: 50;
+  line-height: 1.4;
+  pointer-events: auto;
+}
+#app-footer a { color: var(--accent); text-decoration: none; }
+#app-footer a:hover { text-decoration: underline; }
+/* Keep author name + URL in latin even when overall dir is RTL */
+#app-footer { unicode-bidi: plaintext; }
+
+/* Make room above the footer */
+#game-sidebar, #editor-sidebar { padding-bottom: 52px; }
+#start-screen { padding-bottom: 60px; }
+
+@media (max-width: 720px) {
+  .resize-handle { display: none; }
+  #game-screen, #editor-screen { flex-direction: column; }
+  #game-sidebar, #editor-sidebar {
+    width: 100%;
+    height: 50%;
+    border-left: none;
+    border-top: 1px solid var(--border);
+  }
+  #game-canvas, #editor-canvas { height: 50%; flex: none; }
+  #start-screen h1 { font-size: 36px; }
+}
+</style>
+</head>
+<body>
+
+<!-- START SCREEN -->
+<div id="start-screen" class="screen">
+  <div class="top-bar">
+    <select class="lang-picker"></select>
+    <button id="editor-btn" data-i18n="editor_button">Level Editor</button>
+  </div>
+  <h1>BOTBRIGHT</h1>
+  <div class="tagline" data-i18n="tagline">Program the bot. Light up the world.</div>
+  <div id="level-grid"></div>
+</div>
+
+<!-- GAME SCREEN -->
+<div id="game-screen" class="screen hidden">
+  <canvas id="game-canvas"></canvas>
+  <div id="game-resize" class="resize-handle"></div>
+  <div id="game-sidebar">
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <button id="game-back-btn" data-i18n="back_levels">&larr; Levels</button>
+      <span id="level-counter" style="font-size:12px;color:var(--muted);"></span>
+    </div>
+    <div class="memory-section">
+      <label data-i18n="instructions_drag">Instructions (drag to memory)</label>
+      <div id="palette"></div>
+    </div>
+    <div class="controls">
+      <label><span data-i18n="speed">Speed</span> <input type="range" id="speed" min="1" max="3" value="2"></label>
+    </div>
+    <div class="controls">
+      <button id="reset-btn" style="flex:1" data-i18n="reset">Reset</button>
+      <button id="run-btn" class="primary" style="flex:1" data-i18n="run">Run</button>
+    </div>
+    <div id="instr-counter" style="font-size:12px;color:var(--muted);text-align:center;">Instructions: 0</div>
+    <h2 id="level-name"></h2>
+    <p id="level-desc"></p>
+    <div class="memory-section">
+      <label data-i18n="main_label">Main (12)</label>
+      <div id="main-slots" class="slot-grid"></div>
+    </div>
+    <div class="memory-section">
+      <label data-i18n="f1_label">F1 (8)</label>
+      <div id="f1-slots" class="slot-grid"></div>
+    </div>
+    <div class="memory-section">
+      <label data-i18n="f2_label">F2 (8)</label>
+      <div id="f2-slots" class="slot-grid"></div>
+    </div>
+    <details class="collapse-section" open>
+      <summary>View</summary>
+      <div class="memory-section">
+        <div class="cam-grid">
+          <button data-cam="rot-left" title="Rotate Left (Q)">&#8634;</button>
+          <button data-cam="rot-right" title="Rotate Right (E)">&#8635;</button>
+          <button data-cam="zoom-out" title="Zoom Out (−)">&minus;</button>
+          <button data-cam="zoom-in" title="Zoom In (+)">+</button>
+          <button data-cam="pan-up" title="Pan Up (W)">&uarr;</button>
+          <button data-cam="pan-left" title="Pan Left (A)">&larr;</button>
+          <button data-cam="pan-down" title="Pan Down (S)">&darr;</button>
+          <button data-cam="pan-right" title="Pan Right (D)">&rarr;</button>
+        </div>
+      </div>
+    </details>
+    <details class="collapse-section">
+      <summary>Colors</summary>
+      <div class="memory-section">
+        <div class="color-row">
+          <span>Preset</span>
+          <select id="color-preset"></select>
+        </div>
+        <div class="color-row"><span>Tiles</span><input type="color" id="color-tile"></div>
+        <div class="color-row"><span>Goal</span><input type="color" id="color-goal"></div>
+        <div class="color-row"><span>Lit Goal</span><input type="color" id="color-lit"></div>
+        <div class="color-row"><span>Background</span><input type="color" id="color-bg"></div>
+        <div class="color-row"><span>Robot</span><input type="color" id="color-bot"></div>
+      </div>
+    </details>
+  </div>
+  <div id="win-overlay" class="overlay hidden">
+    <div class="panel">
+      <h2 data-i18n="level_complete">Level Complete!</h2>
+      <p id="win-msg" style="color:var(--muted);" data-i18n="level_complete_msg">Nice programming.</p>
+      <div class="actions">
+        <button id="win-replay" data-i18n="replay">Replay</button>
+        <button id="win-next" class="primary" data-i18n="next">Next &rarr;</button>
+      </div>
+    </div>
+  </div>
+  <div id="halt-overlay" class="overlay hidden">
+    <div class="panel">
+      <h2 data-i18n="halt">Program Halted</h2>
+      <p id="halt-msg" style="color:var(--muted);">Instruction limit reached.</p>
+      <div class="actions">
+        <button id="halt-ok" class="primary" data-i18n="ok">OK</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- EDITOR SCREEN -->
+<div id="editor-screen" class="screen hidden">
+  <canvas id="editor-canvas"></canvas>
+  <div id="editor-resize" class="resize-handle"></div>
+  <div id="editor-sidebar">
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <button id="editor-back-btn" data-i18n="back_menu">&larr; Menu</button>
+      <button id="test-play" class="primary" data-i18n="test_play">Test Play</button>
+    </div>
+
+    <h3 data-i18n="levels_header">Levels</h3>
+    <div id="levels-list"></div>
+    <div class="editor-row">
+      <button id="add-level" data-i18n="add">+ Add</button>
+      <button id="dup-level" data-i18n="duplicate">Duplicate</button>
+      <button id="del-level" class="danger" data-i18n="delete">Delete</button>
+    </div>
+
+    <h3 data-i18n="properties">Properties</h3>
+    <label><span data-i18n="name">Name</span> <input type="text" id="ed-name"></label>
+    <label><span data-i18n="description">Description</span> <input type="text" id="ed-desc"></label>
+    <div class="editor-row">
+      <label style="flex:1"><span data-i18n="width">Width</span> <input type="number" id="ed-width" min="1" max="32"></label>
+      <label style="flex:1"><span data-i18n="height">Height</span> <input type="number" id="ed-height" min="1" max="32"></label>
+    </div>
+    <button id="apply-size" data-i18n="apply_size">Apply Size</button>
+
+    <h3 data-i18n="tools">Tools</h3>
+    <div id="tools"></div>
+
+    <h3 data-i18n="data">Data</h3>
+    <div class="editor-row">
+      <button id="export-btn" style="flex:1" data-i18n="export_json">Export JSON</button>
+      <button id="import-btn" style="flex:1" data-i18n="import_json">Import JSON</button>
+    </div>
+    <button id="reset-levels" data-i18n="reset_levels">Reset to Default Levels</button>
+    <input type="file" id="import-file" accept="application/json,.json" style="display:none">
+  </div>
+</div>
+
+<footer id="app-footer">
+  <div><span data-i18n="footer_generated_by">Generated by</span> Al Sweigart. <a href="https://inventwithpython.com" target="_blank" rel="noopener">https://inventwithpython.com</a></div>
+  <div data-i18n="footer_offline">This app works offline. Save it as a .html file.</div>
+</footer>
+
+<div id="ghost-tile"></div>
+
+<script>
+'use strict';
+
+// ============================================================================
+// INITIAL LEVELS
+// ============================================================================
+const INITIAL_LEVELS = [
+  {name:"LEVEL 1",description:"Program your bot to move and light up the blue tiles!",width:8,height:8,start_position:[2,3],start_direction:"E",goals:[[4,3]],map:"22222222\n00000000\n00000000\n00000000\n00000000\n00000000\n00000000\n22222222"},
+  {name:"LEVEL 2",description:"Try turning your bot!",width:8,height:8,start_position:[2,3],start_direction:"E",goals:[[6,3]],map:"32111123\n00000000\n00000000\n00002000\n00000000\n00000000\n00000000\n32111123"},
+  {name:"LEVEL 3",description:"Jumping can get you over barriers!",width:8,height:8,start_position:[0,4],start_direction:"E",goals:[[4,2],[4,3],[4,4]],map:"00100000\n00100000\n00100000\n00100000\n00100000\n00100000\n00100000\n00100000"},
+  {name:"LEVEL 4",description:"Jumping can also get you to new heights!",width:8,height:8,start_position:[2,6],start_direction:"N",goals:[[7,2]],map:"00000000\n00000000\n00222222\n00200000\n00100000\n00000000\n00000000\n00000000"},
+  {name:"LEVEL 5",description:"Get it now?",width:8,height:8,start_position:[3,5],start_direction:"E",goals:[[3,2]],map:"00000000\n00000000\n00043210\n00000010\n00000010\n00001110\n00000000\n00000000"},
+  {name:"LEVEL 6",description:"Not enough space? Try creating functions and using F1 and F2.",width:8,height:8,start_position:[2,6],start_direction:"N",goals:[[4,3],[5,0],[5,6]],map:"00000200\n00000200\n00000200\n00234200\n00100200\n00000200\n00000200\n00000000"},
+  {name:"LEVEL 7",description:"Re-using functions is great for repetitive tasks!",width:8,height:8,start_position:[0,3],start_direction:"E",goals:[[1,3],[1,4],[2,3],[2,4],[3,3],[3,4],[4,3],[4,4],[5,3],[5,4],[6,3],[6,4],[7,3],[7,4]],map:"00000000\n00000000\n00000000\n00000000\n00000000\n00000000\n00000000\n00000000"},
+  {name:"LEVEL 8",description:"Functions are fun!",width:8,height:8,start_position:[2,5],start_direction:"N",goals:[[2,1],[2,3],[4,1],[4,3],[4,5],[6,1],[6,3],[6,5]],map:"00000000\n00111110\n00101010\n00111110\n00101010\n00001110\n00000000\n00000000"},
+  {name:"LEVEL 9",description:"Now you're thinking like a programmer.",width:8,height:8,start_position:[1,5],start_direction:"E",goals:[[2,1],[2,2],[2,3],[2,4],[3,1],[3,4],[4,1],[4,4],[5,1],[5,2],[5,3],[5,4]],map:"00100100\n01211210\n00100100\n00100100\n01211210\n00100100\n00000000\n00000000"},
+  {name:"LEVEL 10",description:"Do you feel your mind getting numb yet?",width:8,height:8,start_position:[0,6],start_direction:"E",goals:[[0,5],[7,4]],map:"00000000\n00000000\n00000000\n00000000\n00043422\n22242320\n00001000\n00000000"},
+  {name:"LEVEL 11",description:"Second-to-last level. Are you up to it?",width:8,height:8,start_position:[0,7],start_direction:"E",goals:[[0,2],[0,3],[0,4],[0,5],[0,6],[1,2],[1,3],[1,4],[1,5],[1,6],[1,7],[2,2],[2,3],[2,4],[2,5],[2,6],[2,7],[3,2],[3,3],[3,4],[3,5],[3,6],[3,7],[4,2],[4,3],[4,4],[4,5],[4,6],[4,7],[5,2],[5,3],[5,4],[5,5],[5,6],[5,7],[6,2],[6,3],[6,4],[6,5],[6,6],[6,7],[7,2],[7,3],[7,4],[7,5],[7,6],[7,7]],map:"33333333\n22222222\n11111111\n00000000\n11111111\n00000000\n11111111\n00000000"},
+  {name:"LEVEL 12",description:"The final level. Don't get dizzy!",width:8,height:8,start_position:[4,7],start_direction:"N",goals:[[1,2],[1,3],[1,4],[1,5],[2,2],[2,5],[3,2],[3,5],[4,2],[4,3],[4,4],[4,5],[5,2],[5,5],[6,2],[6,5],[7,2],[7,3],[7,4],[7,5]],map:"00000000\n00000000\n01234321\n02003002\n03002003\n04321234\n00000000\n00000000"}
+];
+
+// Working copy of levels (editor mutates this).
+let LEVELS = JSON.parse(JSON.stringify(INITIAL_LEVELS));
+
+// ============================================================================
+// I18N — 23 languages, UI chrome only. Level names/descriptions stay as authored.
+// ============================================================================
+const LANGUAGES = [
+  {code:'en', label:'English',          flag:'🇺🇸'},
+  {code:'es', label:'Español',          flag:'🇪🇸'},
+  {code:'fr', label:'Français',         flag:'🇫🇷'},
+  {code:'de', label:'Deutsch',          flag:'🇩🇪'},
+  {code:'it', label:'Italiano',         flag:'🇮🇹'},
+  {code:'pt', label:'Português',        flag:'🇧🇷'},
+  {code:'ru', label:'Русский',          flag:'🇷🇺'},
+  {code:'zh', label:'中文',              flag:'🇨🇳'},
+  {code:'ja', label:'日本語',            flag:'🇯🇵'},
+  {code:'ko', label:'한국어',            flag:'🇰🇷'},
+  {code:'hi', label:'हिन्दी',             flag:'🇮🇳'},
+  {code:'bn', label:'বাংলা',             flag:'🇧🇩'},
+  {code:'vi', label:'Tiếng Việt',       flag:'🇻🇳'},
+  {code:'ar', label:'العربية',           flag:'🇸🇦'},
+  {code:'th', label:'ไทย',               flag:'🇹🇭'},
+  {code:'tl', label:'Tagalog',          flag:'🇵🇭'},
+  {code:'no', label:'Norsk',            flag:'🇳🇴'},
+  {code:'nl', label:'Nederlands',       flag:'🇳🇱'},
+  {code:'sv', label:'Svenska',          flag:'🇸🇪'},
+  {code:'tr', label:'Türkçe',           flag:'🇹🇷'},
+  {code:'sw', label:'Kiswahili',        flag:'🇹🇿'},
+  {code:'id', label:'Bahasa Indonesia', flag:'🇮🇩'},
+  {code:'pl', label:'Polski',           flag:'🇵🇱'},
+];
+
+const TRANSLATIONS = {
+  en: {
+    tagline:"Program the bot. Light up the world.", editor_button:"Level Editor",
+    back_levels:"← Levels", level_n_of_total:"{n} / {total}",
+    instructions_drag:"Instructions (drag to memory)", speed:"Speed",
+    reset:"Reset", run:"Run", stop:"Stop", instructions_count:"Instructions: {n}",
+    main_label:"Main (12)", f1_label:"F1 (8)", f2_label:"F2 (8)",
+    tt_forward:"Forward", tt_left:"Turn Left", tt_right:"Turn Right",
+    tt_jump:"Jump", tt_light:"Light", tt_f1:"Call F1", tt_f2:"Call F2",
+    level_complete:"Level Complete!", level_complete_msg:"Nice programming.",
+    replay:"Replay", levels:"Levels", next:"Next →",
+    halt:"Program Halted", halt_limit:"Reached the {n} instruction limit.",
+    halt_stack:"Call stack overflow (max {n}).", ok:"OK",
+    back_menu:"← Menu", test_play:"Test Play", levels_header:"Levels",
+    add:"+ Add", duplicate:"Duplicate", delete:"Delete", properties:"Properties",
+    name:"Name", description:"Description", width:"Width", height:"Height",
+    apply_size:"Apply Size", tools:"Tools",
+    tool_camera:"Camera", tool_goal:"Goal", tool_start:"Start", tool_erase:"Erase",
+    data:"Data", export_json:"Export JSON", import_json:"Import JSON",
+    reset_levels:"Reset to Default Levels",
+    delete_confirm:"Delete this level?",
+    reset_confirm:"Reset all levels to the default set? Your changes will be lost.",
+    at_least_one:"At least one level is required.",
+    import_ok:"Imported {n} level(s).", import_fail:"Import failed: {msg}",
+    footer_generated_by:"Generated by",
+    footer_offline:"This app works offline. Save it as a .html file."
+  },
+  es: {
+    tagline:"Programa al robot. Ilumina el mundo.", editor_button:"Editor de niveles",
+    back_levels:"← Niveles", level_n_of_total:"{n} / {total}",
+    instructions_drag:"Instrucciones (arrastra a memoria)", speed:"Velocidad",
+    reset:"Reiniciar", run:"Ejecutar", stop:"Detener", instructions_count:"Instrucciones: {n}",
+    main_label:"Principal (12)", f1_label:"F1 (8)", f2_label:"F2 (8)",
+    tt_forward:"Avanzar", tt_left:"Girar a la izquierda", tt_right:"Girar a la derecha",
+    tt_jump:"Saltar", tt_light:"Iluminar", tt_f1:"Llamar F1", tt_f2:"Llamar F2",
+    level_complete:"¡Nivel completado!", level_complete_msg:"Buen trabajo.",
+    replay:"Reintentar", levels:"Niveles", next:"Siguiente →",
+    halt:"Programa detenido", halt_limit:"Se alcanzó el límite de {n} instrucciones.",
+    halt_stack:"Desbordamiento de pila (máx {n}).", ok:"OK",
+    back_menu:"← Menú", test_play:"Probar", levels_header:"Niveles",
+    add:"+ Añadir", duplicate:"Duplicar", delete:"Eliminar", properties:"Propiedades",
+    name:"Nombre", description:"Descripción", width:"Ancho", height:"Alto",
+    apply_size:"Aplicar tamaño", tools:"Herramientas",
+    tool_camera:"Cámara", tool_goal:"Meta", tool_start:"Inicio", tool_erase:"Borrar",
+    data:"Datos", export_json:"Exportar JSON", import_json:"Importar JSON",
+    reset_levels:"Restaurar niveles",
+    delete_confirm:"¿Eliminar este nivel?",
+    reset_confirm:"¿Restaurar todos los niveles? Se perderán los cambios.",
+    at_least_one:"Se requiere al menos un nivel.",
+    import_ok:"Se importaron {n} nivel(es).", import_fail:"Error de importación: {msg}",
+    footer_generated_by:"Creado por",
+    footer_offline:"Esta app funciona sin conexión. Guárdala como archivo .html."
+  },
+  fr: {
+    tagline:"Programmez le robot. Illuminez le monde.", editor_button:"Éditeur de niveaux",
+    back_levels:"← Niveaux", level_n_of_total:"{n} / {total}",
+    instructions_drag:"Instructions (glissez vers la mémoire)", speed:"Vitesse",
+    reset:"Réinit.", run:"Lancer", stop:"Arrêter", instructions_count:"Instructions : {n}",
+    main_label:"Principal (12)", f1_label:"F1 (8)", f2_label:"F2 (8)",
+    tt_forward:"Avancer", tt_left:"Tourner à gauche", tt_right:"Tourner à droite",
+    tt_jump:"Sauter", tt_light:"Allumer", tt_f1:"Appeler F1", tt_f2:"Appeler F2",
+    level_complete:"Niveau terminé !", level_complete_msg:"Bien programmé.",
+    replay:"Rejouer", levels:"Niveaux", next:"Suivant →",
+    halt:"Programme arrêté", halt_limit:"Limite de {n} instructions atteinte.",
+    halt_stack:"Débordement de pile (max {n}).", ok:"OK",
+    back_menu:"← Menu", test_play:"Tester", levels_header:"Niveaux",
+    add:"+ Ajouter", duplicate:"Dupliquer", delete:"Supprimer", properties:"Propriétés",
+    name:"Nom", description:"Description", width:"Largeur", height:"Hauteur",
+    apply_size:"Appliquer", tools:"Outils",
+    tool_camera:"Caméra", tool_goal:"But", tool_start:"Départ", tool_erase:"Effacer",
+    data:"Données", export_json:"Exporter JSON", import_json:"Importer JSON",
+    reset_levels:"Réinitialiser les niveaux",
+    delete_confirm:"Supprimer ce niveau ?",
+    reset_confirm:"Réinitialiser tous les niveaux ? Vos modifications seront perdues.",
+    at_least_one:"Au moins un niveau est requis.",
+    import_ok:"{n} niveau(x) importé(s).", import_fail:"Échec de l'importation : {msg}",
+    footer_generated_by:"Créé par",
+    footer_offline:"Cette app fonctionne hors ligne. Enregistrez-la en .html."
+  },
+  de: {
+    tagline:"Programmiere den Roboter. Erleuchte die Welt.", editor_button:"Level-Editor",
+    back_levels:"← Level", level_n_of_total:"{n} / {total}",
+    instructions_drag:"Befehle (in den Speicher ziehen)", speed:"Geschwindigkeit",
+    reset:"Zurücksetzen", run:"Start", stop:"Stopp", instructions_count:"Befehle: {n}",
+    main_label:"Haupt (12)", f1_label:"F1 (8)", f2_label:"F2 (8)",
+    tt_forward:"Vorwärts", tt_left:"Links drehen", tt_right:"Rechts drehen",
+    tt_jump:"Springen", tt_light:"Leuchten", tt_f1:"F1 aufrufen", tt_f2:"F2 aufrufen",
+    level_complete:"Level geschafft!", level_complete_msg:"Gut programmiert.",
+    replay:"Erneut", levels:"Level", next:"Weiter →",
+    halt:"Programm gestoppt", halt_limit:"Grenze von {n} Befehlen erreicht.",
+    halt_stack:"Stapelüberlauf (max. {n}).", ok:"OK",
+    back_menu:"← Menü", test_play:"Testen", levels_header:"Level",
+    add:"+ Neu", duplicate:"Duplizieren", delete:"Löschen", properties:"Eigenschaften",
+    name:"Name", description:"Beschreibung", width:"Breite", height:"Höhe",
+    apply_size:"Größe anwenden", tools:"Werkzeuge",
+    tool_camera:"Kamera", tool_goal:"Ziel", tool_start:"Start", tool_erase:"Löschen",
+    data:"Daten", export_json:"JSON exportieren", import_json:"JSON importieren",
+    reset_levels:"Level zurücksetzen",
+    delete_confirm:"Dieses Level löschen?",
+    reset_confirm:"Alle Level zurücksetzen? Änderungen gehen verloren.",
+    at_least_one:"Mindestens ein Level wird benötigt.",
+    import_ok:"{n} Level importiert.", import_fail:"Import fehlgeschlagen: {msg}",
+    footer_generated_by:"Erstellt von",
+    footer_offline:"Diese App läuft offline. Als .html-Datei speichern."
+  },
+  it: {
+    tagline:"Programma il robot. Illumina il mondo.", editor_button:"Editor livelli",
+    back_levels:"← Livelli", level_n_of_total:"{n} / {total}",
+    instructions_drag:"Istruzioni (trascina in memoria)", speed:"Velocità",
+    reset:"Reset", run:"Avvia", stop:"Ferma", instructions_count:"Istruzioni: {n}",
+    main_label:"Principale (12)", f1_label:"F1 (8)", f2_label:"F2 (8)",
+    tt_forward:"Avanti", tt_left:"Gira a sinistra", tt_right:"Gira a destra",
+    tt_jump:"Salta", tt_light:"Illumina", tt_f1:"Chiama F1", tt_f2:"Chiama F2",
+    level_complete:"Livello completato!", level_complete_msg:"Bella programmazione.",
+    replay:"Riprova", levels:"Livelli", next:"Avanti →",
+    halt:"Programma fermato", halt_limit:"Raggiunto il limite di {n} istruzioni.",
+    halt_stack:"Stack overflow (max {n}).", ok:"OK",
+    back_menu:"← Menu", test_play:"Prova", levels_header:"Livelli",
+    add:"+ Aggiungi", duplicate:"Duplica", delete:"Elimina", properties:"Proprietà",
+    name:"Nome", description:"Descrizione", width:"Larghezza", height:"Altezza",
+    apply_size:"Applica", tools:"Strumenti",
+    tool_camera:"Camera", tool_goal:"Meta", tool_start:"Inizio", tool_erase:"Cancella",
+    data:"Dati", export_json:"Esporta JSON", import_json:"Importa JSON",
+    reset_levels:"Ripristina livelli",
+    delete_confirm:"Eliminare questo livello?",
+    reset_confirm:"Ripristinare tutti i livelli? Le modifiche andranno perse.",
+    at_least_one:"Serve almeno un livello.",
+    import_ok:"Importati {n} livello/i.", import_fail:"Importazione fallita: {msg}",
+    footer_generated_by:"Creato da",
+    footer_offline:"Questa app funziona offline. Salvala come file .html."
+  },
+  pt: {
+    tagline:"Programe o robô. Ilumine o mundo.", editor_button:"Editor de níveis",
+    back_levels:"← Níveis", level_n_of_total:"{n} / {total}",
+    instructions_drag:"Instruções (arraste para a memória)", speed:"Velocidade",
+    reset:"Reiniciar", run:"Executar", stop:"Parar", instructions_count:"Instruções: {n}",
+    main_label:"Principal (12)", f1_label:"F1 (8)", f2_label:"F2 (8)",
+    tt_forward:"Avançar", tt_left:"Virar à esquerda", tt_right:"Virar à direita",
+    tt_jump:"Pular", tt_light:"Iluminar", tt_f1:"Chamar F1", tt_f2:"Chamar F2",
+    level_complete:"Nível concluído!", level_complete_msg:"Boa programação.",
+    replay:"Repetir", levels:"Níveis", next:"Próximo →",
+    halt:"Programa interrompido", halt_limit:"Limite de {n} instruções atingido.",
+    halt_stack:"Estouro de pilha (máx {n}).", ok:"OK",
+    back_menu:"← Menu", test_play:"Testar", levels_header:"Níveis",
+    add:"+ Adicionar", duplicate:"Duplicar", delete:"Excluir", properties:"Propriedades",
+    name:"Nome", description:"Descrição", width:"Largura", height:"Altura",
+    apply_size:"Aplicar", tools:"Ferramentas",
+    tool_camera:"Câmera", tool_goal:"Meta", tool_start:"Início", tool_erase:"Apagar",
+    data:"Dados", export_json:"Exportar JSON", import_json:"Importar JSON",
+    reset_levels:"Restaurar níveis",
+    delete_confirm:"Excluir este nível?",
+    reset_confirm:"Restaurar todos os níveis? Suas alterações serão perdidas.",
+    at_least_one:"É necessário pelo menos um nível.",
+    import_ok:"{n} nível(eis) importado(s).", import_fail:"Falha ao importar: {msg}",
+    footer_generated_by:"Criado por",
+    footer_offline:"Este app funciona offline. Salve como arquivo .html."
+  },
+  ru: {
+    tagline:"Запрограммируй робота. Освети мир.", editor_button:"Редактор уровней",
+    back_levels:"← Уровни", level_n_of_total:"{n} / {total}",
+    instructions_drag:"Команды (перетащи в память)", speed:"Скорость",
+    reset:"Сброс", run:"Старт", stop:"Стоп", instructions_count:"Команды: {n}",
+    main_label:"Основная (12)", f1_label:"F1 (8)", f2_label:"F2 (8)",
+    tt_forward:"Вперёд", tt_left:"Налево", tt_right:"Направо",
+    tt_jump:"Прыжок", tt_light:"Зажечь", tt_f1:"Вызвать F1", tt_f2:"Вызвать F2",
+    level_complete:"Уровень пройден!", level_complete_msg:"Хорошая программа.",
+    replay:"Заново", levels:"Уровни", next:"Дальше →",
+    halt:"Программа остановлена", halt_limit:"Достигнут предел в {n} команд.",
+    halt_stack:"Переполнение стека (макс. {n}).", ok:"OK",
+    back_menu:"← Меню", test_play:"Проверить", levels_header:"Уровни",
+    add:"+ Добавить", duplicate:"Копия", delete:"Удалить", properties:"Свойства",
+    name:"Имя", description:"Описание", width:"Ширина", height:"Высота",
+    apply_size:"Применить", tools:"Инструменты",
+    tool_camera:"Камера", tool_goal:"Цель", tool_start:"Старт", tool_erase:"Стереть",
+    data:"Данные", export_json:"Экспорт JSON", import_json:"Импорт JSON",
+    reset_levels:"Сбросить уровни",
+    delete_confirm:"Удалить этот уровень?",
+    reset_confirm:"Сбросить все уровни? Изменения будут потеряны.",
+    at_least_one:"Нужен хотя бы один уровень.",
+    import_ok:"Импортировано уровней: {n}.", import_fail:"Ошибка импорта: {msg}",
+    footer_generated_by:"Создал",
+    footer_offline:"Это приложение работает офлайн. Сохрани как .html файл."
+  },
+  zh: {
+    tagline:"为机器人编程。照亮世界。", editor_button:"关卡编辑器",
+    back_levels:"← 关卡", level_n_of_total:"{n} / {total}",
+    instructions_drag:"指令（拖到内存）", speed:"速度",
+    reset:"重置", run:"运行", stop:"停止", instructions_count:"指令数：{n}",
+    main_label:"主程序 (12)", f1_label:"F1 (8)", f2_label:"F2 (8)",
+    tt_forward:"前进", tt_left:"左转", tt_right:"右转",
+    tt_jump:"跳跃", tt_light:"点亮", tt_f1:"调用 F1", tt_f2:"调用 F2",
+    level_complete:"关卡完成！", level_complete_msg:"编程不错。",
+    replay:"重玩", levels:"关卡", next:"下一关 →",
+    halt:"程序停止", halt_limit:"已达 {n} 条指令上限。",
+    halt_stack:"调用栈溢出（最大 {n}）。", ok:"好",
+    back_menu:"← 菜单", test_play:"试玩", levels_header:"关卡",
+    add:"+ 新增", duplicate:"复制", delete:"删除", properties:"属性",
+    name:"名称", description:"描述", width:"宽度", height:"高度",
+    apply_size:"应用尺寸", tools:"工具",
+    tool_camera:"相机", tool_goal:"目标", tool_start:"起点", tool_erase:"擦除",
+    data:"数据", export_json:"导出 JSON", import_json:"导入 JSON",
+    reset_levels:"重置关卡",
+    delete_confirm:"删除此关卡？",
+    reset_confirm:"重置所有关卡？你的更改将丢失。",
+    at_least_one:"至少需要一个关卡。",
+    import_ok:"已导入 {n} 个关卡。", import_fail:"导入失败：{msg}",
+    footer_generated_by:"作者：",
+    footer_offline:"此应用可离线使用。保存为 .html 文件即可。"
+  },
+  ja: {
+    tagline:"ロボットをプログラムして、世界を照らそう。", editor_button:"レベルエディタ",
+    back_levels:"← レベル", level_n_of_total:"{n} / {total}",
+    instructions_drag:"命令（メモリにドラッグ）", speed:"速度",
+    reset:"リセット", run:"実行", stop:"停止", instructions_count:"命令数: {n}",
+    main_label:"メイン (12)", f1_label:"F1 (8)", f2_label:"F2 (8)",
+    tt_forward:"前進", tt_left:"左折", tt_right:"右折",
+    tt_jump:"ジャンプ", tt_light:"点灯", tt_f1:"F1 を呼ぶ", tt_f2:"F2 を呼ぶ",
+    level_complete:"クリア！", level_complete_msg:"いいプログラム。",
+    replay:"やり直す", levels:"レベル", next:"次へ →",
+    halt:"プログラム停止", halt_limit:"{n} 命令の上限に達しました。",
+    halt_stack:"コールスタックあふれ（最大 {n}）。", ok:"OK",
+    back_menu:"← メニュー", test_play:"テストプレイ", levels_header:"レベル",
+    add:"+ 追加", duplicate:"複製", delete:"削除", properties:"プロパティ",
+    name:"名前", description:"説明", width:"幅", height:"高さ",
+    apply_size:"サイズ適用", tools:"ツール",
+    tool_camera:"カメラ", tool_goal:"ゴール", tool_start:"スタート", tool_erase:"消去",
+    data:"データ", export_json:"JSON 書き出し", import_json:"JSON 読み込み",
+    reset_levels:"レベルをリセット",
+    delete_confirm:"このレベルを削除しますか？",
+    reset_confirm:"すべてのレベルを初期化しますか？変更は失われます。",
+    at_least_one:"少なくとも 1 つのレベルが必要です。",
+    import_ok:"{n} 個のレベルを読み込みました。", import_fail:"読み込み失敗: {msg}",
+    footer_generated_by:"作成",
+    footer_offline:"このアプリはオフラインで動作します。.html ファイルとして保存してください。"
+  },
+  ko: {
+    tagline:"로봇을 프로그래밍하여 세상을 밝혀라.", editor_button:"레벨 편집기",
+    back_levels:"← 레벨", level_n_of_total:"{n} / {total}",
+    instructions_drag:"명령 (메모리로 드래그)", speed:"속도",
+    reset:"리셋", run:"실행", stop:"정지", instructions_count:"명령 수: {n}",
+    main_label:"메인 (12)", f1_label:"F1 (8)", f2_label:"F2 (8)",
+    tt_forward:"전진", tt_left:"왼쪽 회전", tt_right:"오른쪽 회전",
+    tt_jump:"점프", tt_light:"점등", tt_f1:"F1 호출", tt_f2:"F2 호출",
+    level_complete:"레벨 완료!", level_complete_msg:"좋은 프로그래밍.",
+    replay:"다시", levels:"레벨", next:"다음 →",
+    halt:"프로그램 중지", halt_limit:"{n} 명령 한도에 도달했습니다.",
+    halt_stack:"호출 스택 초과 (최대 {n}).", ok:"확인",
+    back_menu:"← 메뉴", test_play:"테스트", levels_header:"레벨",
+    add:"+ 추가", duplicate:"복제", delete:"삭제", properties:"속성",
+    name:"이름", description:"설명", width:"너비", height:"높이",
+    apply_size:"크기 적용", tools:"도구",
+    tool_camera:"카메라", tool_goal:"목표", tool_start:"시작", tool_erase:"지우개",
+    data:"데이터", export_json:"JSON 내보내기", import_json:"JSON 가져오기",
+    reset_levels:"레벨 초기화",
+    delete_confirm:"이 레벨을 삭제하시겠습니까?",
+    reset_confirm:"모든 레벨을 초기화하시겠습니까? 변경사항이 사라집니다.",
+    at_least_one:"최소 하나의 레벨이 필요합니다.",
+    import_ok:"{n}개의 레벨을 가져왔습니다.", import_fail:"가져오기 실패: {msg}",
+    footer_generated_by:"제작",
+    footer_offline:"이 앱은 오프라인에서 동작합니다. .html 파일로 저장하세요."
+  },
+  hi: {
+    tagline:"रोबोट को प्रोग्राम करो। दुनिया को रोशन करो।", editor_button:"लेवल एडिटर",
+    back_levels:"← लेवल", level_n_of_total:"{n} / {total}",
+    instructions_drag:"निर्देश (मेमोरी में खींचें)", speed:"गति",
+    reset:"रीसेट", run:"चलाएं", stop:"रोकें", instructions_count:"निर्देश: {n}",
+    main_label:"मुख्य (12)", f1_label:"F1 (8)", f2_label:"F2 (8)",
+    tt_forward:"आगे", tt_left:"बाएं मुड़ें", tt_right:"दाएं मुड़ें",
+    tt_jump:"कूदें", tt_light:"रोशन करें", tt_f1:"F1 बुलाएं", tt_f2:"F2 बुलाएं",
+    level_complete:"लेवल पूरा!", level_complete_msg:"अच्छी प्रोग्रामिंग।",
+    replay:"फिर से", levels:"लेवल", next:"अगला →",
+    halt:"प्रोग्राम रुका", halt_limit:"{n} निर्देशों की सीमा पहुंची।",
+    halt_stack:"कॉल स्टैक ओवरफ्लो (अधिकतम {n})।", ok:"ठीक",
+    back_menu:"← मेनू", test_play:"टेस्ट", levels_header:"लेवल",
+    add:"+ जोड़ें", duplicate:"कॉपी", delete:"मिटाएं", properties:"गुण",
+    name:"नाम", description:"विवरण", width:"चौड़ाई", height:"ऊंचाई",
+    apply_size:"लागू करें", tools:"उपकरण",
+    tool_camera:"कैमरा", tool_goal:"लक्ष्य", tool_start:"प्रारंभ", tool_erase:"मिटाएं",
+    data:"डेटा", export_json:"JSON निर्यात", import_json:"JSON आयात",
+    reset_levels:"लेवल रीसेट",
+    delete_confirm:"क्या यह लेवल मिटाना है?",
+    reset_confirm:"सभी लेवल रीसेट करें? आपके बदलाव खो जाएंगे।",
+    at_least_one:"कम से कम एक लेवल चाहिए।",
+    import_ok:"{n} लेवल आयात किए।", import_fail:"आयात विफल: {msg}",
+    footer_generated_by:"द्वारा निर्मित",
+    footer_offline:"यह ऐप ऑफलाइन काम करता है। .html फ़ाइल के रूप में सहेजें।"
+  },
+  bn: {
+    tagline:"রোবটকে প্রোগ্রাম করো। দুনিয়াকে আলোকিত করো।", editor_button:"লেভেল এডিটর",
+    back_levels:"← লেভেল", level_n_of_total:"{n} / {total}",
+    instructions_drag:"নির্দেশ (মেমোরিতে টানো)", speed:"গতি",
+    reset:"রিসেট", run:"চালাও", stop:"থামাও", instructions_count:"নির্দেশ: {n}",
+    main_label:"প্রধান (12)", f1_label:"F1 (8)", f2_label:"F2 (8)",
+    tt_forward:"সামনে", tt_left:"বাঁয়ে ঘোরাও", tt_right:"ডানে ঘোরাও",
+    tt_jump:"লাফাও", tt_light:"আলো জ্বালাও", tt_f1:"F1 ডাকো", tt_f2:"F2 ডাকো",
+    level_complete:"লেভেল শেষ!", level_complete_msg:"ভালো প্রোগ্রাম।",
+    replay:"আবার", levels:"লেভেল", next:"পরবর্তী →",
+    halt:"প্রোগ্রাম থেমেছে", halt_limit:"{n} নির্দেশের সীমা ছুঁয়েছে।",
+    halt_stack:"কল স্ট্যাক ওভারফ্লো (সর্বোচ্চ {n})।", ok:"ঠিক আছে",
+    back_menu:"← মেনু", test_play:"পরীক্ষা", levels_header:"লেভেল",
+    add:"+ যোগ", duplicate:"নকল", delete:"মুছো", properties:"বৈশিষ্ট্য",
+    name:"নাম", description:"বর্ণনা", width:"প্রস্থ", height:"উচ্চতা",
+    apply_size:"প্রয়োগ", tools:"যন্ত্র",
+    tool_camera:"ক্যামেরা", tool_goal:"লক্ষ্য", tool_start:"শুরু", tool_erase:"মোছো",
+    data:"ডেটা", export_json:"JSON রপ্তানি", import_json:"JSON আমদানি",
+    reset_levels:"লেভেল রিসেট",
+    delete_confirm:"এই লেভেল মুছবে?",
+    reset_confirm:"সব লেভেল রিসেট? পরিবর্তন হারিয়ে যাবে।",
+    at_least_one:"অন্তত একটি লেভেল দরকার।",
+    import_ok:"{n}টি লেভেল আমদানি হলো।", import_fail:"আমদানি ব্যর্থ: {msg}",
+    footer_generated_by:"তৈরি করেছেন",
+    footer_offline:"এই অ্যাপ অফলাইনে চলে। .html ফাইল হিসেবে সংরক্ষণ করো।"
+  },
+  vi: {
+    tagline:"Lập trình robot. Thắp sáng thế giới.", editor_button:"Trình chỉnh sửa màn",
+    back_levels:"← Màn", level_n_of_total:"{n} / {total}",
+    instructions_drag:"Lệnh (kéo vào bộ nhớ)", speed:"Tốc độ",
+    reset:"Đặt lại", run:"Chạy", stop:"Dừng", instructions_count:"Lệnh: {n}",
+    main_label:"Chính (12)", f1_label:"F1 (8)", f2_label:"F2 (8)",
+    tt_forward:"Tiến", tt_left:"Quay trái", tt_right:"Quay phải",
+    tt_jump:"Nhảy", tt_light:"Thắp sáng", tt_f1:"Gọi F1", tt_f2:"Gọi F2",
+    level_complete:"Hoàn thành màn!", level_complete_msg:"Lập trình tốt.",
+    replay:"Chơi lại", levels:"Màn", next:"Tiếp →",
+    halt:"Chương trình dừng", halt_limit:"Đã đạt giới hạn {n} lệnh.",
+    halt_stack:"Tràn ngăn xếp (tối đa {n}).", ok:"OK",
+    back_menu:"← Menu", test_play:"Thử", levels_header:"Màn",
+    add:"+ Thêm", duplicate:"Sao chép", delete:"Xoá", properties:"Thuộc tính",
+    name:"Tên", description:"Mô tả", width:"Rộng", height:"Cao",
+    apply_size:"Áp dụng", tools:"Công cụ",
+    tool_camera:"Máy quay", tool_goal:"Đích", tool_start:"Bắt đầu", tool_erase:"Xoá",
+    data:"Dữ liệu", export_json:"Xuất JSON", import_json:"Nhập JSON",
+    reset_levels:"Đặt lại màn",
+    delete_confirm:"Xoá màn này?",
+    reset_confirm:"Đặt lại tất cả màn? Mọi thay đổi sẽ mất.",
+    at_least_one:"Cần ít nhất một màn.",
+    import_ok:"Đã nhập {n} màn.", import_fail:"Nhập thất bại: {msg}",
+    footer_generated_by:"Tạo bởi",
+    footer_offline:"Ứng dụng hoạt động ngoại tuyến. Lưu thành tệp .html."
+  },
+  ar: {
+    tagline:"برمج الروبوت. أضِئ العالم.", editor_button:"محرر المستويات",
+    back_levels:"← المستويات", level_n_of_total:"{n} / {total}",
+    instructions_drag:"تعليمات (اسحب إلى الذاكرة)", speed:"السرعة",
+    reset:"إعادة", run:"تشغيل", stop:"إيقاف", instructions_count:"التعليمات: {n}",
+    main_label:"الرئيسي (12)", f1_label:"F1 (8)", f2_label:"F2 (8)",
+    tt_forward:"تقدم", tt_left:"استدر يسارًا", tt_right:"استدر يمينًا",
+    tt_jump:"قفز", tt_light:"أضِئ", tt_f1:"استدعِ F1", tt_f2:"استدعِ F2",
+    level_complete:"اكتمل المستوى!", level_complete_msg:"برمجة جيدة.",
+    replay:"أعد", levels:"المستويات", next:"التالي →",
+    halt:"توقف البرنامج", halt_limit:"تم بلوغ حد {n} تعليمة.",
+    halt_stack:"تجاوز المكدس (الحد {n}).", ok:"حسنًا",
+    back_menu:"← القائمة", test_play:"اختبار", levels_header:"المستويات",
+    add:"+ إضافة", duplicate:"نسخ", delete:"حذف", properties:"خصائص",
+    name:"الاسم", description:"الوصف", width:"العرض", height:"الارتفاع",
+    apply_size:"تطبيق", tools:"أدوات",
+    tool_camera:"كاميرا", tool_goal:"هدف", tool_start:"بداية", tool_erase:"محو",
+    data:"بيانات", export_json:"تصدير JSON", import_json:"استيراد JSON",
+    reset_levels:"إعادة ضبط المستويات",
+    delete_confirm:"حذف هذا المستوى؟",
+    reset_confirm:"إعادة ضبط جميع المستويات؟ ستفقد التغييرات.",
+    at_least_one:"يلزم مستوى واحد على الأقل.",
+    import_ok:"تم استيراد {n} مستوى.", import_fail:"فشل الاستيراد: {msg}",
+    footer_generated_by:"صنع بواسطة",
+    footer_offline:"يعمل هذا التطبيق دون اتصال. احفظه كملف .html."
+  },
+  th: {
+    tagline:"เขียนโปรแกรมหุ่นยนต์ จุดประกายโลก", editor_button:"เครื่องมือสร้างด่าน",
+    back_levels:"← ด่าน", level_n_of_total:"{n} / {total}",
+    instructions_drag:"คำสั่ง (ลากไปที่หน่วยความจำ)", speed:"ความเร็ว",
+    reset:"รีเซ็ต", run:"เริ่ม", stop:"หยุด", instructions_count:"คำสั่ง: {n}",
+    main_label:"หลัก (12)", f1_label:"F1 (8)", f2_label:"F2 (8)",
+    tt_forward:"เดินหน้า", tt_left:"เลี้ยวซ้าย", tt_right:"เลี้ยวขวา",
+    tt_jump:"กระโดด", tt_light:"จุดไฟ", tt_f1:"เรียก F1", tt_f2:"เรียก F2",
+    level_complete:"ผ่านด่าน!", level_complete_msg:"เขียนโปรแกรมเก่ง",
+    replay:"เล่นใหม่", levels:"ด่าน", next:"ถัดไป →",
+    halt:"หยุดโปรแกรม", halt_limit:"ถึงขีดจำกัด {n} คำสั่ง",
+    halt_stack:"สแต็กเรียกล้น (สูงสุด {n})", ok:"ตกลง",
+    back_menu:"← เมนู", test_play:"ทดสอบ", levels_header:"ด่าน",
+    add:"+ เพิ่ม", duplicate:"สำเนา", delete:"ลบ", properties:"คุณสมบัติ",
+    name:"ชื่อ", description:"คำอธิบาย", width:"กว้าง", height:"สูง",
+    apply_size:"ใช้ขนาด", tools:"เครื่องมือ",
+    tool_camera:"กล้อง", tool_goal:"เป้าหมาย", tool_start:"เริ่ม", tool_erase:"ลบ",
+    data:"ข้อมูล", export_json:"ส่งออก JSON", import_json:"นำเข้า JSON",
+    reset_levels:"รีเซ็ตด่าน",
+    delete_confirm:"ลบด่านนี้?",
+    reset_confirm:"รีเซ็ตด่านทั้งหมด? การเปลี่ยนแปลงจะหายไป",
+    at_least_one:"ต้องมีอย่างน้อยหนึ่งด่าน",
+    import_ok:"นำเข้า {n} ด่านแล้ว", import_fail:"นำเข้าล้มเหลว: {msg}",
+    footer_generated_by:"สร้างโดย",
+    footer_offline:"แอปนี้ทำงานออฟไลน์ บันทึกเป็นไฟล์ .html"
+  },
+  tl: {
+    tagline:"I-program ang robot. Liwanagan ang mundo.", editor_button:"Tagaedit ng Level",
+    back_levels:"← Mga Level", level_n_of_total:"{n} / {total}",
+    instructions_drag:"Mga utos (i-drag sa memorya)", speed:"Bilis",
+    reset:"I-reset", run:"Patakbuhin", stop:"Itigil", instructions_count:"Mga utos: {n}",
+    main_label:"Pangunahin (12)", f1_label:"F1 (8)", f2_label:"F2 (8)",
+    tt_forward:"Sulong", tt_left:"Liko pakaliwa", tt_right:"Liko pakanan",
+    tt_jump:"Talon", tt_light:"Pailawan", tt_f1:"Tawagin ang F1", tt_f2:"Tawagin ang F2",
+    level_complete:"Tapos na ang level!", level_complete_msg:"Magaling magprograma.",
+    replay:"Ulitin", levels:"Mga Level", next:"Susunod →",
+    halt:"Huminto ang programa", halt_limit:"Naabot ang limitasyon ng {n} utos.",
+    halt_stack:"Umapaw ang call stack (max {n}).", ok:"OK",
+    back_menu:"← Menu", test_play:"Subukan", levels_header:"Mga Level",
+    add:"+ Idagdag", duplicate:"Kopyahin", delete:"Burahin", properties:"Mga Katangian",
+    name:"Pangalan", description:"Paglalarawan", width:"Lapad", height:"Taas",
+    apply_size:"Ilapat", tools:"Mga Kasangkapan",
+    tool_camera:"Kamera", tool_goal:"Layon", tool_start:"Simula", tool_erase:"Burahin",
+    data:"Datos", export_json:"I-export JSON", import_json:"I-import JSON",
+    reset_levels:"I-reset ang Mga Level",
+    delete_confirm:"Burahin ang level na ito?",
+    reset_confirm:"I-reset ang lahat ng level? Mawawala ang mga pagbabago.",
+    at_least_one:"Kailangan ng isang level kahit paano.",
+    import_ok:"Na-import ang {n} (na) level.", import_fail:"Bigo ang pag-import: {msg}",
+    footer_generated_by:"Ginawa ni",
+    footer_offline:"Gumagana ang app kahit offline. I-save bilang .html file."
+  },
+  no: {
+    tagline:"Programmer roboten. Lys opp verden.", editor_button:"Nivå-editor",
+    back_levels:"← Nivåer", level_n_of_total:"{n} / {total}",
+    instructions_drag:"Instruksjoner (dra til minne)", speed:"Hastighet",
+    reset:"Tilbakestill", run:"Kjør", stop:"Stopp", instructions_count:"Instruksjoner: {n}",
+    main_label:"Hoved (12)", f1_label:"F1 (8)", f2_label:"F2 (8)",
+    tt_forward:"Fremover", tt_left:"Snu venstre", tt_right:"Snu høyre",
+    tt_jump:"Hopp", tt_light:"Lys", tt_f1:"Kall F1", tt_f2:"Kall F2",
+    level_complete:"Nivå fullført!", level_complete_msg:"Bra programmert.",
+    replay:"Prøv igjen", levels:"Nivåer", next:"Neste →",
+    halt:"Programmet stoppet", halt_limit:"Nådde grensen på {n} instruksjoner.",
+    halt_stack:"Stack-overflyt (maks {n}).", ok:"OK",
+    back_menu:"← Meny", test_play:"Test", levels_header:"Nivåer",
+    add:"+ Legg til", duplicate:"Dupliser", delete:"Slett", properties:"Egenskaper",
+    name:"Navn", description:"Beskrivelse", width:"Bredde", height:"Høyde",
+    apply_size:"Bruk størrelse", tools:"Verktøy",
+    tool_camera:"Kamera", tool_goal:"Mål", tool_start:"Start", tool_erase:"Visk",
+    data:"Data", export_json:"Eksporter JSON", import_json:"Importer JSON",
+    reset_levels:"Tilbakestill nivåer",
+    delete_confirm:"Slette dette nivået?",
+    reset_confirm:"Tilbakestille alle nivåer? Endringene dine går tapt.",
+    at_least_one:"Minst ett nivå kreves.",
+    import_ok:"Importerte {n} nivå(er).", import_fail:"Import feilet: {msg}",
+    footer_generated_by:"Laget av",
+    footer_offline:"Denne appen fungerer offline. Lagre den som .html-fil."
+  },
+  nl: {
+    tagline:"Programmeer de robot. Verlicht de wereld.", editor_button:"Levelbewerker",
+    back_levels:"← Levels", level_n_of_total:"{n} / {total}",
+    instructions_drag:"Instructies (sleep naar geheugen)", speed:"Snelheid",
+    reset:"Reset", run:"Start", stop:"Stop", instructions_count:"Instructies: {n}",
+    main_label:"Hoofd (12)", f1_label:"F1 (8)", f2_label:"F2 (8)",
+    tt_forward:"Vooruit", tt_left:"Linksom", tt_right:"Rechtsom",
+    tt_jump:"Springen", tt_light:"Verlichten", tt_f1:"F1 aanroepen", tt_f2:"F2 aanroepen",
+    level_complete:"Level voltooid!", level_complete_msg:"Goed geprogrammeerd.",
+    replay:"Opnieuw", levels:"Levels", next:"Volgende →",
+    halt:"Programma gestopt", halt_limit:"Grens van {n} instructies bereikt.",
+    halt_stack:"Stack overflow (max {n}).", ok:"OK",
+    back_menu:"← Menu", test_play:"Testen", levels_header:"Levels",
+    add:"+ Nieuw", duplicate:"Dupliceren", delete:"Verwijderen", properties:"Eigenschappen",
+    name:"Naam", description:"Beschrijving", width:"Breedte", height:"Hoogte",
+    apply_size:"Toepassen", tools:"Gereedschap",
+    tool_camera:"Camera", tool_goal:"Doel", tool_start:"Start", tool_erase:"Wissen",
+    data:"Data", export_json:"JSON exporteren", import_json:"JSON importeren",
+    reset_levels:"Levels resetten",
+    delete_confirm:"Dit level verwijderen?",
+    reset_confirm:"Alle levels resetten? Je wijzigingen gaan verloren.",
+    at_least_one:"Er is minstens één level nodig.",
+    import_ok:"{n} level(s) geïmporteerd.", import_fail:"Importeren mislukt: {msg}",
+    footer_generated_by:"Gemaakt door",
+    footer_offline:"Deze app werkt offline. Sla op als .html-bestand."
+  },
+  sv: {
+    tagline:"Programmera roboten. Lys upp världen.", editor_button:"Banredigerare",
+    back_levels:"← Banor", level_n_of_total:"{n} / {total}",
+    instructions_drag:"Instruktioner (dra till minne)", speed:"Hastighet",
+    reset:"Återställ", run:"Kör", stop:"Stoppa", instructions_count:"Instruktioner: {n}",
+    main_label:"Huvud (12)", f1_label:"F1 (8)", f2_label:"F2 (8)",
+    tt_forward:"Framåt", tt_left:"Sväng vänster", tt_right:"Sväng höger",
+    tt_jump:"Hoppa", tt_light:"Lys", tt_f1:"Anropa F1", tt_f2:"Anropa F2",
+    level_complete:"Banan klar!", level_complete_msg:"Bra programmerat.",
+    replay:"Försök igen", levels:"Banor", next:"Nästa →",
+    halt:"Programmet stoppat", halt_limit:"Nådde gränsen {n} instruktioner.",
+    halt_stack:"Stacköverflöde (max {n}).", ok:"OK",
+    back_menu:"← Meny", test_play:"Testa", levels_header:"Banor",
+    add:"+ Lägg till", duplicate:"Duplicera", delete:"Ta bort", properties:"Egenskaper",
+    name:"Namn", description:"Beskrivning", width:"Bredd", height:"Höjd",
+    apply_size:"Tillämpa", tools:"Verktyg",
+    tool_camera:"Kamera", tool_goal:"Mål", tool_start:"Start", tool_erase:"Sudda",
+    data:"Data", export_json:"Exportera JSON", import_json:"Importera JSON",
+    reset_levels:"Återställ banor",
+    delete_confirm:"Ta bort denna bana?",
+    reset_confirm:"Återställ alla banor? Dina ändringar går förlorade.",
+    at_least_one:"Minst en bana krävs.",
+    import_ok:"{n} bana/banor importerade.", import_fail:"Import misslyckades: {msg}",
+    footer_generated_by:"Skapad av",
+    footer_offline:"Appen fungerar offline. Spara som .html-fil."
+  },
+  tr: {
+    tagline:"Robotu programla. Dünyayı aydınlat.", editor_button:"Seviye Düzenleyici",
+    back_levels:"← Seviyeler", level_n_of_total:"{n} / {total}",
+    instructions_drag:"Komutlar (belleğe sürükle)", speed:"Hız",
+    reset:"Sıfırla", run:"Çalıştır", stop:"Durdur", instructions_count:"Komutlar: {n}",
+    main_label:"Ana (12)", f1_label:"F1 (8)", f2_label:"F2 (8)",
+    tt_forward:"İleri", tt_left:"Sola dön", tt_right:"Sağa dön",
+    tt_jump:"Atla", tt_light:"Yak", tt_f1:"F1 çağır", tt_f2:"F2 çağır",
+    level_complete:"Seviye tamamlandı!", level_complete_msg:"Güzel programlama.",
+    replay:"Tekrar", levels:"Seviyeler", next:"Sonraki →",
+    halt:"Program durdu", halt_limit:"{n} komut sınırına ulaşıldı.",
+    halt_stack:"Çağrı yığını taştı (en fazla {n}).", ok:"Tamam",
+    back_menu:"← Menü", test_play:"Dene", levels_header:"Seviyeler",
+    add:"+ Ekle", duplicate:"Kopyala", delete:"Sil", properties:"Özellikler",
+    name:"Ad", description:"Açıklama", width:"Genişlik", height:"Yükseklik",
+    apply_size:"Uygula", tools:"Araçlar",
+    tool_camera:"Kamera", tool_goal:"Hedef", tool_start:"Başlangıç", tool_erase:"Sil",
+    data:"Veri", export_json:"JSON dışa aktar", import_json:"JSON içe aktar",
+    reset_levels:"Seviyeleri sıfırla",
+    delete_confirm:"Bu seviye silinsin mi?",
+    reset_confirm:"Tüm seviyeler sıfırlansın mı? Değişiklikler kaybolacak.",
+    at_least_one:"En az bir seviye gerekli.",
+    import_ok:"{n} seviye içe aktarıldı.", import_fail:"İçe aktarma başarısız: {msg}",
+    footer_generated_by:"Hazırlayan",
+    footer_offline:"Bu uygulama çevrimdışı çalışır. .html dosyası olarak kaydedin."
+  },
+  sw: {
+    tagline:"Programu roboti. Mulika ulimwengu.", editor_button:"Mhariri wa Ngazi",
+    back_levels:"← Ngazi", level_n_of_total:"{n} / {total}",
+    instructions_drag:"Maagizo (buruta hadi kumbukumbu)", speed:"Kasi",
+    reset:"Anza upya", run:"Endesha", stop:"Simamisha", instructions_count:"Maagizo: {n}",
+    main_label:"Kuu (12)", f1_label:"F1 (8)", f2_label:"F2 (8)",
+    tt_forward:"Mbele", tt_left:"Geuka kushoto", tt_right:"Geuka kulia",
+    tt_jump:"Ruka", tt_light:"Washa", tt_f1:"Ita F1", tt_f2:"Ita F2",
+    level_complete:"Ngazi imekamilika!", level_complete_msg:"Programu nzuri.",
+    replay:"Cheza tena", levels:"Ngazi", next:"Endelea →",
+    halt:"Programu imesimama", halt_limit:"Imefika kikomo cha maagizo {n}.",
+    halt_stack:"Mafuriko ya stack (kiwango cha juu {n}).", ok:"Sawa",
+    back_menu:"← Menyu", test_play:"Jaribu", levels_header:"Ngazi",
+    add:"+ Ongeza", duplicate:"Nakili", delete:"Futa", properties:"Sifa",
+    name:"Jina", description:"Maelezo", width:"Upana", height:"Urefu",
+    apply_size:"Tumia", tools:"Zana",
+    tool_camera:"Kamera", tool_goal:"Lengo", tool_start:"Anza", tool_erase:"Futa",
+    data:"Data", export_json:"Hamisha JSON", import_json:"Leta JSON",
+    reset_levels:"Anza upya ngazi",
+    delete_confirm:"Futa ngazi hii?",
+    reset_confirm:"Anza upya ngazi zote? Mabadiliko yatapotea.",
+    at_least_one:"Inahitajika angalau ngazi moja.",
+    import_ok:"Imeleta ngazi {n}.", import_fail:"Imeshindwa kuleta: {msg}",
+    footer_generated_by:"Imetengenezwa na",
+    footer_offline:"Programu hii hufanya kazi nje ya mtandao. Hifadhi kama faili ya .html."
+  },
+  id: {
+    tagline:"Program robot. Terangi dunia.", editor_button:"Editor Level",
+    back_levels:"← Level", level_n_of_total:"{n} / {total}",
+    instructions_drag:"Perintah (seret ke memori)", speed:"Kecepatan",
+    reset:"Atur ulang", run:"Jalankan", stop:"Hentikan", instructions_count:"Perintah: {n}",
+    main_label:"Utama (12)", f1_label:"F1 (8)", f2_label:"F2 (8)",
+    tt_forward:"Maju", tt_left:"Belok kiri", tt_right:"Belok kanan",
+    tt_jump:"Lompat", tt_light:"Nyalakan", tt_f1:"Panggil F1", tt_f2:"Panggil F2",
+    level_complete:"Level selesai!", level_complete_msg:"Pemrograman bagus.",
+    replay:"Ulang", levels:"Level", next:"Lanjut →",
+    halt:"Program berhenti", halt_limit:"Mencapai batas {n} perintah.",
+    halt_stack:"Stack overflow (maks {n}).", ok:"OK",
+    back_menu:"← Menu", test_play:"Uji", levels_header:"Level",
+    add:"+ Tambah", duplicate:"Salin", delete:"Hapus", properties:"Properti",
+    name:"Nama", description:"Deskripsi", width:"Lebar", height:"Tinggi",
+    apply_size:"Terapkan", tools:"Alat",
+    tool_camera:"Kamera", tool_goal:"Sasaran", tool_start:"Mulai", tool_erase:"Hapus",
+    data:"Data", export_json:"Ekspor JSON", import_json:"Impor JSON",
+    reset_levels:"Atur ulang level",
+    delete_confirm:"Hapus level ini?",
+    reset_confirm:"Atur ulang semua level? Perubahanmu akan hilang.",
+    at_least_one:"Diperlukan minimal satu level.",
+    import_ok:"Berhasil mengimpor {n} level.", import_fail:"Gagal mengimpor: {msg}",
+    footer_generated_by:"Dibuat oleh",
+    footer_offline:"Aplikasi ini bekerja offline. Simpan sebagai berkas .html."
+  },
+  pl: {
+    tagline:"Zaprogramuj robota. Rozświetl świat.", editor_button:"Edytor poziomów",
+    back_levels:"← Poziomy", level_n_of_total:"{n} / {total}",
+    instructions_drag:"Polecenia (przeciągnij do pamięci)", speed:"Prędkość",
+    reset:"Reset", run:"Start", stop:"Stop", instructions_count:"Polecenia: {n}",
+    main_label:"Główna (12)", f1_label:"F1 (8)", f2_label:"F2 (8)",
+    tt_forward:"Naprzód", tt_left:"Skręć w lewo", tt_right:"Skręć w prawo",
+    tt_jump:"Skocz", tt_light:"Zaświeć", tt_f1:"Wywołaj F1", tt_f2:"Wywołaj F2",
+    level_complete:"Poziom ukończony!", level_complete_msg:"Dobre programowanie.",
+    replay:"Powtórz", levels:"Poziomy", next:"Dalej →",
+    halt:"Program zatrzymany", halt_limit:"Osiągnięto limit {n} poleceń.",
+    halt_stack:"Przepełnienie stosu wywołań (maks {n}).", ok:"OK",
+    back_menu:"← Menu", test_play:"Testuj", levels_header:"Poziomy",
+    add:"+ Dodaj", duplicate:"Duplikuj", delete:"Usuń", properties:"Właściwości",
+    name:"Nazwa", description:"Opis", width:"Szerokość", height:"Wysokość",
+    apply_size:"Zastosuj", tools:"Narzędzia",
+    tool_camera:"Kamera", tool_goal:"Cel", tool_start:"Start", tool_erase:"Wymaż",
+    data:"Dane", export_json:"Eksportuj JSON", import_json:"Importuj JSON",
+    reset_levels:"Resetuj poziomy",
+    delete_confirm:"Usunąć ten poziom?",
+    reset_confirm:"Zresetować wszystkie poziomy? Twoje zmiany zostaną utracone.",
+    at_least_one:"Wymagany jest przynajmniej jeden poziom.",
+    import_ok:"Zaimportowano {n} poziom(ów).", import_fail:"Import nie powiódł się: {msg}",
+    footer_generated_by:"Utworzone przez",
+    footer_offline:"Ta aplikacja działa offline. Zapisz ją jako plik .html."
+  },
+};
+
+let currentLang = (() => {
+  const raw = (navigator.language || 'en').split('-')[0];
+  return TRANSLATIONS[raw] ? raw : 'en';
+})();
+
+function t(key, params) {
+  const tbl = TRANSLATIONS[currentLang] || TRANSLATIONS.en;
+  let s = tbl[key];
+  if (s === undefined) s = TRANSLATIONS.en[key];
+  if (s === undefined) s = key;
+  if (params) {
+    for (const k in params) s = s.split('{' + k + '}').join(params[k]);
+  }
+  return s;
+}
+
+function applyLang() {
+  document.documentElement.lang = currentLang;
+  document.documentElement.dir = (currentLang === 'ar') ? 'rtl' : 'ltr';
+  // Static text via data-i18n
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    el.textContent = t(el.dataset.i18n);
+  });
+  document.querySelectorAll('[data-i18n-title]').forEach(el => {
+    el.title = t(el.dataset.i18nTitle);
+  });
+  // Dynamic elements
+  if (typeof renderPalette === 'function') renderPalette();
+  if (typeof renderMemory === 'function') renderMemory();
+  if (typeof renderTools === 'function' && editorState && editorState.level) renderTools();
+  if (typeof renderLevelsList === 'function' && editorState && editorState.level) renderLevelsList();
+  if (typeof updateInstrCounter === 'function') updateInstrCounter();
+  if (typeof updateRunButton === 'function') updateRunButton();
+  if (typeof updateLevelCounter === 'function') updateLevelCounter();
+}
+
+function setLanguage(code) {
+  if (!TRANSLATIONS[code]) code = 'en';
+  currentLang = code;
+  document.querySelectorAll('.lang-picker').forEach(sel => {
+    if (sel.value !== code) sel.value = code;
+  });
+  applyLang();
+}
+
+function populateLangPickers() {
+  document.querySelectorAll('.lang-picker').forEach(sel => {
+    sel.innerHTML = '';
+    for (const L of LANGUAGES) {
+      const opt = document.createElement('option');
+      opt.value = L.code;
+      opt.textContent = L.flag + ' ' + L.label;
+      sel.appendChild(opt);
+    }
+    sel.value = currentLang;
+    sel.addEventListener('change', (e) => setLanguage(e.target.value));
+  });
+}
+
+// ============================================================================
+// UTILITIES
+// ============================================================================
+function parseMap(str, width, height) {
+  const rows = str.split('\n');
+  const grid = [];
+  for (let y = 0; y < height; y++) {
+    const row = [];
+    const src = rows[y] || '';
+    for (let x = 0; x < width; x++) {
+      const ch = src[x];
+      row.push(ch >= '0' && ch <= '9' ? parseInt(ch, 10) : 0);
+    }
+    grid.push(row);
+  }
+  return grid;
+}
+function serializeMap(heights) {
+  return heights.map(row => row.map(h => String(Math.max(0, Math.min(9, h|0)))).join('')).join('\n');
+}
+function lerp(a, b, t) { return a + (b - a) * t; }
+function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+function easeInOut(t) { return t < 0.5 ? 2*t*t : 1 - Math.pow(-2*t+2, 2)/2; }
+function getCss(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+function dirToVec(d) {
+  // 0=N(-y), 1=E(+x), 2=S(+y), 3=W(-x)
+  return [[0,-1],[1,0],[0,1],[-1,0]][d];
+}
+function dirFromLetter(L) { return {N:0,E:1,S:2,W:3}[L]; }
+function dirToLetter(d) { return "NESW"[d]; }
+
+// ============================================================================
+// ISO RENDERING CONSTANTS
+// ============================================================================
+const TILE_W = 64;   // diamond full width
+const TILE_H = 32;   // diamond full height
+const HALF_STEP = 22; // pixel height of one block step — 11/16 of TILE_H so heights don't align with grid rows behind
+
+// ============================================================================
+// CAMERA
+// ============================================================================
+function makeCamera() {
+  return {
+    pan: {x: 0, y: 0},
+    targetPan: {x: 0, y: 0},
+    zoom: 1,
+    targetZoom: 1,
+    rotation: 0,        // continuous, in quarter-turns
+    targetRotation: 0,
+  };
+}
+function updateCamera(cam) {
+  const k = 0.18;
+  cam.pan.x = lerp(cam.pan.x, cam.targetPan.x, k);
+  cam.pan.y = lerp(cam.pan.y, cam.targetPan.y, k);
+  cam.zoom = lerp(cam.zoom, cam.targetZoom, k);
+  cam.rotation = lerp(cam.rotation, cam.targetRotation, k);
+  // Snap when very close
+  if (Math.abs(cam.pan.x - cam.targetPan.x) < 0.05) cam.pan.x = cam.targetPan.x;
+  if (Math.abs(cam.pan.y - cam.targetPan.y) < 0.05) cam.pan.y = cam.targetPan.y;
+  if (Math.abs(cam.zoom - cam.targetZoom) < 0.001) cam.zoom = cam.targetZoom;
+  if (Math.abs(cam.rotation - cam.targetRotation) < 0.001) cam.rotation = cam.targetRotation;
+}
+
+// Rotate (x,y) around level center by cam.rotation quarter turns.
+function applyRotation(x, y, w, h, rotation) {
+  const cx = (w - 1) / 2, cy = (h - 1) / 2;
+  const a = rotation * Math.PI / 2;
+  const dx = x - cx, dy = y - cy;
+  const c = Math.cos(a), s = Math.sin(a);
+  return [dx * c - dy * s + cx, dx * s + dy * c + cy];
+}
+// Project rotated grid coords into screen coords (relative to view center).
+function project(rx, ry, height) {
+  return [
+    (rx - ry) * TILE_W / 2,
+    (rx + ry) * TILE_H / 2 - height * HALF_STEP
+  ];
+}
+
+// ============================================================================
+// COLORS (re-read each frame for theme-switch responsiveness)
+// ============================================================================
+function colors() {
+  return {
+    bg: getCss('--bg'),
+    text: getCss('--text'),
+    tileTop: getCss('--tile-top'),
+    tileLight: getCss('--tile-light'),
+    tileDark: getCss('--tile-dark'),
+    tileEdge: getCss('--tile-edge'),
+    goalTop: getCss('--goal-top'),
+    goalLight: getCss('--goal-light'),
+    goalDark: getCss('--goal-dark'),
+    litTop: getCss('--lit-top'),
+    litLight: getCss('--lit-light'),
+    litDark: getCss('--lit-dark'),
+    botBody: getCss('--bot-body'),
+    botEdge: getCss('--bot-edge'),
+    botEye: getCss('--bot-eye'),
+    botPanel: getCss('--bot-panel'),
+    accent: getCss('--accent'),
+  };
+}
+
+// ============================================================================
+// BOT RENDERER (modular for future hats/skins)
+// ============================================================================
+const HATS = {
+  none: function(ctx, sx, sy, c) {}
+};
+const SKINS = {
+  default: function(ctx, sx, sy, c, screenDir) {
+    // Tall and lean oblong: narrow width, ~3x taller than wide.
+    const bodyW = 13, bodyH = 52;
+    // Shadow
+    ctx.beginPath();
+    ctx.fillStyle = 'rgba(0,0,0,0.25)';
+    ctx.ellipse(sx, sy + 4, bodyW * 1.2, 4, 0, 0, Math.PI * 2);
+    ctx.fill();
+    // Body (tall oblong sphere) — bottom of ellipse sits at sy (tile top center).
+    const grad = ctx.createLinearGradient(sx - bodyW, sy - bodyH, sx + bodyW, sy);
+    grad.addColorStop(0, c.botBody);
+    grad.addColorStop(1, c.botEdge);
+    ctx.beginPath();
+    ctx.fillStyle = grad;
+    ctx.ellipse(sx, sy - bodyH/2, bodyW, bodyH/2, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.lineWidth = 1.5;
+    ctx.strokeStyle = c.botEdge;
+    ctx.stroke();
+    // Eyes — high on the body (head area), always horizontally aligned.
+    const cx = sx, cy = sy - bodyH + 16;
+    if (screenDir[1] >= -0.1) {
+      const offX = screenDir[0] * 3;
+      const offY = screenDir[1] * 2;
+      ctx.fillStyle = c.botEye;
+      const eyeR = 2;
+      const sep = 3.5;
+      for (let s of [-1, 1]) {
+        const ex = cx + offX + sep * s;
+        const ey = cy + offY;
+        ctx.beginPath();
+        ctx.arc(ex, ey, eyeR, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = 'rgba(255,255,255,0.7)';
+        ctx.beginPath();
+        ctx.arc(ex - 0.5, ey - 0.5, 0.7, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = c.botEye;
+      }
+    }
+    if (screenDir[1] < 0.1) {
+      // Back panel — on the lower back of the tall body.
+      const offX = -screenDir[0] * 4;
+      const offY = -screenDir[1] * 3;
+      const panelW = 11, panelH = 9;
+      const px = sx + offX - panelW/2;
+      const py = sy - 20 + offY;
+      ctx.fillStyle = c.botPanel;
+      ctx.fillRect(px, py, panelW, panelH);
+      ctx.strokeStyle = c.botEdge;
+      ctx.lineWidth = 1;
+      ctx.strokeRect(px, py, panelW, panelH);
+      // Rivets in the four corners
+      ctx.fillStyle = c.botEdge;
+      ctx.fillRect(px + 1.5, py + 1.5, 1.2, 1.2);
+      ctx.fillRect(px + panelW - 2.7, py + 1.5, 1.2, 1.2);
+      ctx.fillRect(px + 1.5, py + panelH - 2.7, 1.2, 1.2);
+      ctx.fillRect(px + panelW - 2.7, py + panelH - 2.7, 1.2, 1.2);
+    }
+  }
+};
+
+function drawBot(ctx, state, c, hat = 'none', skin = 'default') {
+  ctx.save();
+  ctx.translate(state.sx, state.sy);
+  SKINS[skin](ctx, 0, 0, c, state.screenDir);
+  HATS[hat](ctx, 0, 0, c);
+  ctx.restore();
+}
+
+// ============================================================================
+// TILE / SCENE RENDERER
+// ============================================================================
+function drawTile(ctx, sx, sy, height, isGoal, isLit, c) {
+  // Top diamond color reflects goal/lit state; sides always use neutral gray
+  // so the goal/lit color reads as a marker on the top face only.
+  let top;
+  if (isGoal && isLit)      top = c.litTop;
+  else if (isGoal)          top = c.goalTop;
+  else                       top = c.tileTop;
+  const light = c.tileLight;
+  const dark = c.tileDark;
+  // Each tile is a stack of individual half-height blocks so heights are countable.
+  // Every tile draws (height + 1) blocks so all tile bottoms align at the same ground level;
+  // raised tiles never hover above height-0 tiles.
+  const blocks = height + 1;
+  ctx.lineWidth = 1;
+  ctx.strokeStyle = c.tileEdge;
+  // Draw blocks from bottom up. Each block sits HALF_STEP below the one above it.
+  for (let i = blocks - 1; i >= 0; i--) {
+    const yTop = sy + i * HALF_STEP;
+    // Left side parallelogram (one block tall)
+    ctx.beginPath();
+    ctx.moveTo(sx - TILE_W/2, yTop);
+    ctx.lineTo(sx, yTop + TILE_H/2);
+    ctx.lineTo(sx, yTop + TILE_H/2 + HALF_STEP);
+    ctx.lineTo(sx - TILE_W/2, yTop + HALF_STEP);
+    ctx.closePath();
+    ctx.fillStyle = light;
+    ctx.fill();
+    ctx.stroke();
+    // Right side parallelogram
+    ctx.beginPath();
+    ctx.moveTo(sx + TILE_W/2, yTop);
+    ctx.lineTo(sx, yTop + TILE_H/2);
+    ctx.lineTo(sx, yTop + TILE_H/2 + HALF_STEP);
+    ctx.lineTo(sx + TILE_W/2, yTop + HALF_STEP);
+    ctx.closePath();
+    ctx.fillStyle = dark;
+    ctx.fill();
+    ctx.stroke();
+  }
+  // Top diamond (only on the top block)
+  ctx.beginPath();
+  ctx.moveTo(sx, sy - TILE_H/2);
+  ctx.lineTo(sx + TILE_W/2, sy);
+  ctx.lineTo(sx, sy + TILE_H/2);
+  ctx.lineTo(sx - TILE_W/2, sy);
+  ctx.closePath();
+  ctx.fillStyle = top;
+  ctx.fill();
+  ctx.stroke();
+}
+
+// Drawable in z-sorted order: tiles + bot + start-marker.
+function buildDrawList(level, bot, cam, startMarker) {
+  const items = [];
+  const w = level.width, h = level.height;
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      const [rx, ry] = applyRotation(x, y, w, h, cam.rotation);
+      items.push({ depth: rx + ry, type: 'tile', x, y, rx, ry, height: level.heights[y][x] });
+    }
+  }
+  if (bot) {
+    // Use the visual position for rendering coords, but z-sort using max of source/destination
+    // tile depths so the bot never hides behind the tile it's moving into.
+    const [rx, ry] = applyRotation(bot.x, bot.y, w, h, cam.rotation);
+    const srcGX = Math.round(bot.srcX !== undefined ? bot.srcX : bot.x);
+    const srcGY = Math.round(bot.srcY !== undefined ? bot.srcY : bot.y);
+    const dstGX = Math.round(bot.dstX !== undefined ? bot.dstX : bot.x);
+    const dstGY = Math.round(bot.dstY !== undefined ? bot.dstY : bot.y);
+    const [srx, sry] = applyRotation(srcGX, srcGY, w, h, cam.rotation);
+    const [drx, dry] = applyRotation(dstGX, dstGY, w, h, cam.rotation);
+    const depth = Math.max(srx + sry, drx + dry) + 0.5;
+    items.push({ depth, type: 'bot', rx, ry, height: bot.height });
+  }
+  if (startMarker) {
+    const [rx, ry] = applyRotation(startMarker.x, startMarker.y, w, h, cam.rotation);
+    items.push({ depth: rx + ry + 0.0005, type: 'startMarker', rx, ry, height: startMarker.height, direction: startMarker.direction });
+  }
+  items.sort((a, b) => a.depth - b.depth);
+  return items;
+}
+
+function renderScene(ctx, canvas, level, bot, cam, opts = {}) {
+  const c = colors();
+  const dpr = window.devicePixelRatio || 1;
+  const W = canvas.clientWidth, H = canvas.clientHeight;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.fillStyle = c.bg;
+  ctx.fillRect(0, 0, W, H);
+
+  const z = cam.zoom;
+  const cx = W / 2 + cam.pan.x;
+  const cy = H / 2 + cam.pan.y;
+  // We translate, then scale, then draw at projected coords.
+  ctx.translate(cx, cy);
+  ctx.scale(z, z);
+
+  const items = buildDrawList(level, bot, cam, opts.startMarker);
+  for (const it of items) {
+    if (it.type === 'tile') {
+      const [sx, sy] = project(it.rx, it.ry, it.height);
+      const isGoal = !!level.goalMap[it.y][it.x];
+      const isLit = !!level.litMap[it.y][it.x];
+      drawTile(ctx, sx, sy, it.height, isGoal, isLit, c);
+    } else if (it.type === 'bot') {
+      const [sx, sy] = project(it.rx, it.ry, it.height);
+      // Compute screen direction vector for the bot's facing.
+      const worldDir = [Math.sin(bot.facingAngle), -Math.cos(bot.facingAngle)];
+      // Apply camera rotation
+      const a = cam.rotation * Math.PI / 2;
+      const rc = Math.cos(a), rs = Math.sin(a);
+      const rdx = worldDir[0] * rc - worldDir[1] * rs;
+      const rdy = worldDir[0] * rs + worldDir[1] * rc;
+      // Project to screen
+      const screenDx = (rdx - rdy) * 0.5;
+      const screenDy = (rdx + rdy) * 0.25;
+      const mag = Math.hypot(screenDx, screenDy) || 1;
+      const screenDir = [screenDx / mag, screenDy / mag];
+      drawBot(ctx, { sx, sy: sy - 4, screenDir }, c);
+    } else if (it.type === 'startMarker') {
+      const [sx, sy] = project(it.rx, it.ry, it.height);
+      // Draw a small ring + arrow indicating start position + direction.
+      ctx.save();
+      ctx.beginPath();
+      ctx.strokeStyle = c.accent;
+      ctx.lineWidth = 2;
+      ctx.ellipse(sx, sy, 18, 9, 0, 0, Math.PI * 2);
+      ctx.stroke();
+      // Arrow
+      const a = cam.rotation * Math.PI / 2;
+      const wd = dirToVec(it.direction);
+      const rc = Math.cos(a), rs = Math.sin(a);
+      const rdx = wd[0] * rc - wd[1] * rs;
+      const rdy = wd[0] * rs + wd[1] * rc;
+      const sdx = (rdx - rdy) * 0.5;
+      const sdy = (rdx + rdy) * 0.25;
+      const mag = Math.hypot(sdx, sdy) || 1;
+      const nx = sdx / mag, ny = sdy / mag;
+      // Stem — thick line from the back of the ring toward the arrowhead.
+      ctx.strokeStyle = c.accent;
+      ctx.lineWidth = 3;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(sx - nx * 9, sy - ny * 5);
+      ctx.lineTo(sx + nx * 8, sy + ny * 4);
+      ctx.stroke();
+      // Arrowhead at the tip
+      ctx.fillStyle = c.accent;
+      ctx.beginPath();
+      ctx.moveTo(sx + nx * 16, sy + ny * 8.5);                              // tip
+      ctx.lineTo(sx + nx * 7 - ny * 5.5, sy + ny * 3.5 + nx * 5.5);         // left base
+      ctx.lineTo(sx + nx * 7 + ny * 5.5, sy + ny * 3.5 - nx * 5.5);         // right base
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+    }
+  }
+}
+
+// ============================================================================
+// INSTRUCTION ICONS (inline SVG)
+// ============================================================================
+const INSTRUCTIONS = ['FORWARD','LEFT','RIGHT','JUMP','LIGHT','F1','F2'];
+const INSTRUCTION_LABELS = {
+  FORWARD: 'Forward',
+  LEFT: 'Turn Left',
+  RIGHT: 'Turn Right',
+  JUMP: 'Jump',
+  LIGHT: 'Light',
+  F1: 'Call F1',
+  F2: 'Call F2'
+};
+const ICONS = {
+  FORWARD: '<svg viewBox="0 0 24 24"><path d="M12 3 L20 13 L15 13 L15 21 L9 21 L9 13 L4 13 Z" fill="currentColor"/></svg>',
+  LEFT:    '<svg viewBox="0 0 24 24"><path d="M17 22 L17 8 L6 8 L6 5 L1 11 L6 17 L6 14 L11 14 L11 22 Z" fill="currentColor"/></svg>',
+  RIGHT:   '<svg viewBox="0 0 24 24"><path d="M7 22 L7 8 L18 8 L18 5 L23 11 L18 17 L18 14 L13 14 L13 22 Z" fill="currentColor"/></svg>',
+  JUMP:    '<svg viewBox="0 0 24 24"><path d="M3 18 Q12 -2 21 18 L17 18 L17 14 L19 14 L12 6 L5 14 L7 14 L7 18 Z" fill="currentColor"/></svg>',
+  LIGHT:   '<svg viewBox="0 0 24 24"><path d="M12 2 A7 7 0 0 0 7 14 L7 16 L17 16 L17 14 A7 7 0 0 0 12 2 Z M8 18 L16 18 L16 20 L8 20 Z M10 22 L14 22 L14 23 L10 23 Z" fill="currentColor"/></svg>',
+  F1:      '<svg viewBox="0 0 24 24"><text x="12" y="17" text-anchor="middle" font-family="sans-serif" font-weight="700" font-size="13" fill="currentColor">F1</text></svg>',
+  F2:      '<svg viewBox="0 0 24 24"><text x="12" y="17" text-anchor="middle" font-family="sans-serif" font-weight="700" font-size="13" fill="currentColor">F2</text></svg>',
+};
+function makeTileEl(instr) {
+  const el = document.createElement('div');
+  el.className = 'tile';
+  el.dataset.instr = instr;
+  el.title = t('tt_' + instr.toLowerCase());
+  el.innerHTML = ICONS[instr];
+  return el;
+}
+
+// ============================================================================
+// GAME STATE
+// ============================================================================
+const ctx = {}; // canvases
+const gameState = {
+  levelIdx: 0,
+  level: null,         // expanded level: heights, goals, goalMap, litMap, w, h, name, desc, startPos, startDir
+  bot: null,           // {x, y, height, facing (int), facingAngle (radians), animX, animY, animH, animAngle}
+  programs: { main: [], f1: [], f2: [] },
+  running: false,
+  callStack: [],       // [{program: 'main'|'f1'|'f2', pc: 0}]
+  totalSteps: 0,
+  stepStart: 0,        // performance.now() of current step
+  stepDuration: 400,
+  pendingAnim: null,   // { type, from, to, fromAngle, toAngle, isJump }
+  currentSlot: null,   // {prog, index}
+  cam: makeCamera(),
+};
+const editorState = {
+  levelIdx: 0,
+  tool: 'camera',
+  paintHeight: 0,
+  cam: makeCamera(),
+  pointerDownInfo: null,
+  level: null, // expanded for editor render only (no bot)
+};
+
+function expandLevel(L) {
+  const heights = parseMap(L.map, L.width, L.height);
+  const goalMap = Array.from({length: L.height}, () => Array(L.width).fill(false));
+  for (const [gx, gy] of L.goals) {
+    if (gy >= 0 && gy < L.height && gx >= 0 && gx < L.width) goalMap[gy][gx] = true;
+  }
+  const litMap = Array.from({length: L.height}, () => Array(L.width).fill(false));
+  return {
+    name: L.name,
+    desc: L.description,
+    width: L.width,
+    height: L.height,
+    heights, goals: L.goals.slice(), goalMap, litMap,
+    startPos: L.start_position.slice(),
+    startDir: dirFromLetter(L.start_direction)
+  };
+}
+function collapseLevel(level) {
+  // Inverse of expandLevel: build a JSON-savable record.
+  return {
+    name: level.name,
+    description: level.desc,
+    width: level.width,
+    height: level.height,
+    start_position: level.startPos.slice(),
+    start_direction: dirToLetter(level.startDir),
+    goals: level.goals.map(g => g.slice()),
+    map: serializeMap(level.heights)
+  };
+}
+
+function resetLevel(keepPrograms = true) {
+  const L = LEVELS[gameState.levelIdx];
+  gameState.level = expandLevel(L);
+  const [sx, sy] = gameState.level.startPos;
+  const sh = gameState.level.heights[sy][sx];
+  gameState.bot = {
+    x: sx, y: sy, height: sh,
+    facing: gameState.level.startDir,
+    facingAngle: gameState.level.startDir * Math.PI / 2
+  };
+  gameState.bot.animX = sx; gameState.bot.animY = sy; gameState.bot.animH = sh;
+  gameState.bot.animAngle = gameState.bot.facingAngle;
+  gameState.running = false;
+  gameState.callStack = [];
+  gameState.totalSteps = 0;
+  gameState.pendingAnim = null;
+  gameState.currentSlot = null;
+  if (!keepPrograms) {
+    gameState.programs = { main: [], f1: [], f2: [] };
+  }
+  // Only recenter the camera when entering a new level; Run/Reset/Replay
+  // should preserve whatever view the player has set up.
+  if (!keepPrograms) centerCamera(gameState.cam, gameState.level);
+  renderMemory();
+  updateRunButton();
+  updateInstrCounter();
+  document.getElementById('level-name').textContent = gameState.level.name;
+  document.getElementById('level-desc').textContent = gameState.level.desc;
+  updateLevelCounter();
+}
+function updateLevelCounter() {
+  const el = document.getElementById('level-counter');
+  if (el && gameState.level) el.textContent = t('level_n_of_total', { n: gameState.levelIdx + 1, total: LEVELS.length });
+}
+function updateInstrCounter() {
+  const el = document.getElementById('instr-counter');
+  if (el) el.textContent = t('instructions_count', { n: gameState.totalSteps });
+}
+
+function centerCamera(cam, level) {
+  // Position camera so the level center sits at view center initially.
+  cam.pan.x = 0; cam.pan.y = 0;
+  cam.targetPan.x = 0; cam.targetPan.y = 0;
+  cam.zoom = 1; cam.targetZoom = 1;
+  cam.rotation = 0; cam.targetRotation = 0;
+}
+
+// ============================================================================
+// MEMORY / DRAG-AND-DROP
+// ============================================================================
+const PROGRAM_CAPS = { main: 12, f1: 8, f2: 8 };
+const PROGRAM_COLS = { main: 4, f1: 4, f2: 4 };
+
+function renderMemory() {
+  for (const prog of ['main','f1','f2']) {
+    const container = document.getElementById(prog + '-slots');
+    container.innerHTML = '';
+    const cap = PROGRAM_CAPS[prog];
+    const list = gameState.programs[prog];
+    for (let i = 0; i < cap; i++) {
+      const slot = document.createElement('div');
+      slot.className = 'slot';
+      slot.dataset.prog = prog;
+      slot.dataset.idx = i;
+      if (list[i]) {
+        const t = makeTileEl(list[i]);
+        t.dataset.source = 'memory';
+        slot.appendChild(t);
+      }
+      // Highlight currently executing
+      if (gameState.currentSlot && gameState.currentSlot.prog === prog && gameState.currentSlot.index === i) {
+        slot.classList.add('executing');
+      }
+      container.appendChild(slot);
+    }
+  }
+}
+
+function renderPalette() {
+  const p = document.getElementById('palette');
+  p.innerHTML = '';
+  for (const instr of INSTRUCTIONS) {
+    const slot = document.createElement('div');
+    slot.className = 'slot';
+    const t = makeTileEl(instr);
+    t.dataset.source = 'palette';
+    slot.appendChild(t);
+    p.appendChild(slot);
+  }
+}
+
+// Drag handling for tiles (pointer events; works for mouse and touch).
+let drag = null; // {instr, source, sourceProg, sourceIdx, ghost, lastTarget}
+const ghostEl = document.getElementById('ghost-tile');
+
+function setupDragHandlers(rootEl) {
+  rootEl.addEventListener('pointerdown', onPointerDown);
+}
+function onPointerDown(e) {
+  const tile = e.target.closest('.tile');
+  if (!tile) return;
+  if (gameState.running) return;
+  e.preventDefault();
+  const source = tile.dataset.source || 'palette';
+  const instr = tile.dataset.instr;
+  let sourceProg = null, sourceIdx = -1;
+  if (source === 'memory') {
+    const slot = tile.parentElement;
+    sourceProg = slot.dataset.prog;
+    sourceIdx = parseInt(slot.dataset.idx, 10);
+  }
+  drag = { instr, source, sourceProg, sourceIdx, x: e.clientX, y: e.clientY, lastTarget: null, fromTileEl: tile };
+  // Visually fade original if from memory
+  if (source === 'memory') tile.classList.add('dragging');
+  // Show ghost
+  ghostEl.innerHTML = '';
+  const ghostTile = makeTileEl(instr);
+  ghostEl.appendChild(ghostTile);
+  ghostEl.style.display = 'block';
+  ghostEl.style.left = (e.clientX - 30) + 'px';
+  ghostEl.style.top = (e.clientY - 30) + 'px';
+  window.addEventListener('pointermove', onPointerMove);
+  window.addEventListener('pointerup', onPointerUp);
+  window.addEventListener('pointercancel', onPointerUp);
+}
+function onPointerMove(e) {
+  if (!drag) return;
+  ghostEl.style.left = (e.clientX - 30) + 'px';
+  ghostEl.style.top = (e.clientY - 30) + 'px';
+  // Hover effect on potential drop target
+  const el = elementUnder(e.clientX, e.clientY);
+  const slot = el ? el.closest('.slot') : null;
+  if (drag.lastTarget && drag.lastTarget !== slot) drag.lastTarget.classList.remove('drop-target');
+  if (slot && slot.dataset.prog) {
+    slot.classList.add('drop-target');
+    drag.lastTarget = slot;
+  } else {
+    drag.lastTarget = null;
+  }
+}
+function elementUnder(x, y) {
+  ghostEl.style.display = 'none';
+  const el = document.elementFromPoint(x, y);
+  ghostEl.style.display = 'block';
+  return el;
+}
+function onPointerUp(e) {
+  if (!drag) return;
+  window.removeEventListener('pointermove', onPointerMove);
+  window.removeEventListener('pointerup', onPointerUp);
+  window.removeEventListener('pointercancel', onPointerUp);
+  const el = elementUnder(e.clientX, e.clientY);
+  const slot = el ? el.closest('.slot') : null;
+  if (drag.lastTarget) drag.lastTarget.classList.remove('drop-target');
+
+  if (slot && slot.dataset.prog) {
+    const targetProg = slot.dataset.prog;
+    const targetIdx = parseInt(slot.dataset.idx, 10);
+    insertInstruction(drag.source, drag.sourceProg, drag.sourceIdx, drag.instr, targetProg, targetIdx);
+  } else {
+    // Dropped outside: if from memory, delete; if from palette, cancel.
+    if (drag.source === 'memory') {
+      removeInstruction(drag.sourceProg, drag.sourceIdx);
+    }
+  }
+  if (drag.fromTileEl) drag.fromTileEl.classList.remove('dragging');
+  ghostEl.style.display = 'none';
+  ghostEl.innerHTML = '';
+  drag = null;
+  renderMemory();
+}
+function compactProgram(prog) {
+  // Programs are flat arrays with no holes (just length).
+  // Slots beyond length are empty; we keep arrays compact.
+}
+function removeInstruction(prog, idx) {
+  const list = gameState.programs[prog];
+  if (idx < list.length) list.splice(idx, 1);
+}
+function insertInstruction(source, srcProg, srcIdx, instr, dstProg, dstIdx) {
+  const dst = gameState.programs[dstProg];
+  const cap = PROGRAM_CAPS[dstProg];
+  // If source is memory and same prog, do a reorder.
+  if (source === 'memory' && srcProg === dstProg) {
+    if (srcIdx === dstIdx) return; // no-op
+    // Remove from src, then insert at dst (adjust dst if needed).
+    const taken = dst.splice(srcIdx, 1)[0];
+    const insertAt = Math.min(dstIdx, dst.length);
+    dst.splice(insertAt, 0, taken);
+    return;
+  }
+  // Source from a different program (memory) — remove from source first.
+  if (source === 'memory') {
+    const srcList = gameState.programs[srcProg];
+    srcList.splice(srcIdx, 1);
+  }
+  // Insert at target index (clamped). If beyond current length, just append.
+  const insertAt = Math.min(dstIdx, dst.length);
+  dst.splice(insertAt, 0, instr);
+  // Truncate if exceeded cap (drop the last per spec).
+  if (dst.length > cap) dst.length = cap;
+}
+
+// ============================================================================
+// EXECUTION ENGINE
+// ============================================================================
+const MAX_TOTAL_STEPS = 1000;
+const MAX_STACK = 100;
+const STEP_DURATIONS = { 1: 800, 2: 400, 3: 150 };
+
+function startRun() {
+  if (gameState.running) return;
+  if (gameState.programs.main.length === 0) return;
+  resetLevel(true);  // reset level state but keep programs
+  gameState.running = true;
+  gameState.callStack = [{ program: 'main', pc: 0 }];
+  gameState.totalSteps = 0;
+  gameState.stepDuration = STEP_DURATIONS[document.getElementById('speed').value] || 400;
+  gameState.pendingAnim = null;
+  scheduleNextStep(performance.now());
+  updateRunButton();
+}
+function stopRun() {
+  gameState.running = false;
+  gameState.callStack = [];
+  gameState.pendingAnim = null;
+  gameState.currentSlot = null;
+  renderMemory();
+  updateRunButton();
+}
+function updateRunButton() {
+  const btn = document.getElementById('run-btn');
+  btn.textContent = gameState.running ? t('stop') : t('run');
+  btn.classList.toggle('danger', gameState.running);
+  btn.classList.toggle('primary', !gameState.running);
+}
+
+function scheduleNextStep(now) {
+  // Pick next instruction from call stack.
+  while (gameState.callStack.length > 0) {
+    const top = gameState.callStack[gameState.callStack.length - 1];
+    const list = gameState.programs[top.program];
+    if (top.pc >= list.length) {
+      gameState.callStack.pop();
+      continue;
+    }
+    break;
+  }
+  if (gameState.callStack.length === 0) {
+    // Program complete.
+    gameState.running = false;
+    gameState.currentSlot = null;
+    renderMemory();
+    updateRunButton();
+    return;
+  }
+  const top = gameState.callStack[gameState.callStack.length - 1];
+  const instr = gameState.programs[top.program][top.pc];
+  gameState.currentSlot = { prog: top.program, index: top.pc };
+  renderMemory();
+
+  if (++gameState.totalSteps > MAX_TOTAL_STEPS) {
+    showHaltOverlay(t('halt_limit', { n: MAX_TOTAL_STEPS }));
+    stopRun();
+    return;
+  }
+  updateInstrCounter();
+
+  // Pre-advance pc for current frame (so when this step completes, we move on).
+  top.pc++;
+  // Execute the instruction (possibly setting up an animation).
+  executeInstruction(instr, now);
+}
+
+function executeInstruction(instr, now) {
+  const bot = gameState.bot;
+  const dur = gameState.stepDuration;
+  const animBase = { startTime: now, duration: dur };
+
+  if (instr === 'FORWARD') {
+    const [dx, dy] = dirToVec(bot.facing);
+    const nx = bot.x + dx, ny = bot.y + dy;
+    if (inBounds(nx, ny) && gameState.level.heights[ny][nx] === bot.height) {
+      bot.srcX = bot.x; bot.srcY = bot.y; bot.dstX = nx; bot.dstY = ny;
+      gameState.pendingAnim = { ...animBase, type: 'move', fromX: bot.x, fromY: bot.y, fromH: bot.height, toX: nx, toY: ny, toH: bot.height };
+    } else {
+      gameState.pendingAnim = { ...animBase, type: 'wait' };
+    }
+  } else if (instr === 'LEFT') {
+    // Snap to new direction (no smooth turn).
+    bot.facing = (bot.facing + 3) % 4;
+    bot.facingAngle = bot.facing * Math.PI / 2;
+    bot.animAngle = bot.facingAngle;
+    gameState.pendingAnim = { ...animBase, type: 'wait' };
+  } else if (instr === 'RIGHT') {
+    bot.facing = (bot.facing + 1) % 4;
+    bot.facingAngle = bot.facing * Math.PI / 2;
+    bot.animAngle = bot.facingAngle;
+    gameState.pendingAnim = { ...animBase, type: 'wait' };
+  } else if (instr === 'JUMP') {
+    const [dx, dy] = dirToVec(bot.facing);
+    const nx = bot.x + dx, ny = bot.y + dy;
+    if (inBounds(nx, ny)) {
+      const targetH = gameState.level.heights[ny][nx];
+      const diff = targetH - bot.height;
+      if (diff === 1 || diff < 0) {
+        bot.srcX = bot.x; bot.srcY = bot.y; bot.dstX = nx; bot.dstY = ny;
+        gameState.pendingAnim = { ...animBase, type: 'jump', fromX: bot.x, fromY: bot.y, fromH: bot.height, toX: nx, toY: ny, toH: targetH };
+      } else {
+        gameState.pendingAnim = { ...animBase, type: 'wait' };
+      }
+    } else {
+      gameState.pendingAnim = { ...animBase, type: 'wait' };
+    }
+  } else if (instr === 'LIGHT') {
+    if (gameState.level.goalMap[bot.y][bot.x]) {
+      gameState.level.litMap[bot.y][bot.x] = !gameState.level.litMap[bot.y][bot.x];
+    }
+    gameState.pendingAnim = { ...animBase, type: 'wait' };
+  } else if (instr === 'F1' || instr === 'F2') {
+    const prog = instr.toLowerCase();
+    if (gameState.callStack.length >= MAX_STACK) {
+      showHaltOverlay(t('halt_stack', { n: MAX_STACK }));
+      stopRun();
+      return;
+    }
+    gameState.callStack.push({ program: prog, pc: 0 });
+    gameState.pendingAnim = { ...animBase, type: 'wait' };
+  } else {
+    gameState.pendingAnim = { ...animBase, type: 'wait' };
+  }
+}
+
+function inBounds(x, y) {
+  return x >= 0 && y >= 0 && x < gameState.level.width && y < gameState.level.height;
+}
+
+function tickExecution(now) {
+  if (!gameState.running || !gameState.pendingAnim) return;
+  const a = gameState.pendingAnim;
+  const t = Math.min(1, (now - a.startTime) / a.duration);
+  const e = easeInOut(t);
+  const bot = gameState.bot;
+  if (a.type === 'move') {
+    bot.animX = lerp(a.fromX, a.toX, e);
+    bot.animY = lerp(a.fromY, a.toY, e);
+    bot.animH = a.fromH;
+  } else if (a.type === 'jump') {
+    bot.animX = lerp(a.fromX, a.toX, e);
+    bot.animY = lerp(a.fromY, a.toY, e);
+    // Parabolic arc above the higher of the two endpoints.
+    const peak = Math.max(a.fromH, a.toH) + 1.2;
+    const baseH = lerp(a.fromH, a.toH, e);
+    const arc = Math.sin(t * Math.PI) * (peak - Math.max(a.fromH, a.toH));
+    bot.animH = baseH + arc;
+  } // wait/turn (turn snaps instantly elsewhere): nothing to interpolate
+
+  if (t >= 1) {
+    // Commit
+    if (a.type === 'move' || a.type === 'jump') {
+      bot.x = a.toX; bot.y = a.toY; bot.height = a.toH;
+      bot.animX = bot.x; bot.animY = bot.y; bot.animH = bot.height;
+      bot.srcX = bot.x; bot.srcY = bot.y; bot.dstX = bot.x; bot.dstY = bot.y;
+    }
+    gameState.pendingAnim = null;
+    // Win check
+    if (isLevelWon()) {
+      gameState.running = false;
+      gameState.currentSlot = null;
+      renderMemory();
+      updateRunButton();
+      showWinOverlay();
+      return;
+    }
+    scheduleNextStep(now);
+  }
+}
+
+function isLevelWon() {
+  return gameState.level.goals.every(([gx, gy]) => gameState.level.litMap[gy][gx]);
+}
+
+function showWinOverlay() {
+  document.getElementById('win-overlay').classList.remove('hidden');
+}
+function hideWinOverlay() {
+  document.getElementById('win-overlay').classList.add('hidden');
+}
+function showHaltOverlay(msg) {
+  document.getElementById('halt-msg').textContent = msg;
+  document.getElementById('halt-overlay').classList.remove('hidden');
+}
+function hideHaltOverlay() {
+  document.getElementById('halt-overlay').classList.add('hidden');
+}
+
+// ============================================================================
+// INPUT (KEYBOARD, WHEEL, POINTER on canvas)
+// ============================================================================
+function activeCam() {
+  if (!document.getElementById('game-screen').classList.contains('hidden')) return gameState.cam;
+  if (!document.getElementById('editor-screen').classList.contains('hidden')) return editorState.cam;
+  return null;
+}
+function activeCanvas() {
+  if (!document.getElementById('game-screen').classList.contains('hidden')) return document.getElementById('game-canvas');
+  if (!document.getElementById('editor-screen').classList.contains('hidden')) return document.getElementById('editor-canvas');
+  return null;
+}
+
+window.addEventListener('keydown', (e) => {
+  const cam = activeCam();
+  if (!cam) return;
+  // Ignore key handling if focused on input/textarea
+  if (e.target.matches('input, textarea')) return;
+  const panStep = 60;
+  switch (e.key) {
+    case 'w': case 'W': case 'ArrowUp':    cam.targetPan.y += panStep; e.preventDefault(); break;
+    case 's': case 'S': case 'ArrowDown':  cam.targetPan.y -= panStep; e.preventDefault(); break;
+    case 'a': case 'A': case 'ArrowLeft':  cam.targetPan.x += panStep; e.preventDefault(); break;
+    case 'd': case 'D': case 'ArrowRight': cam.targetPan.x -= panStep; e.preventDefault(); break;
+    case 'q': case 'Q': case 'PageUp':     cam.targetRotation -= 1; e.preventDefault(); break;
+    case 'e': case 'E': case 'PageDown':   cam.targetRotation += 1; e.preventDefault(); break;
+    case '+': case '=':                    cam.targetZoom = clamp(cam.targetZoom * 1.15, 0.3, 4); e.preventDefault(); break;
+    case '-': case '_':                    cam.targetZoom = clamp(cam.targetZoom / 1.15, 0.3, 4); e.preventDefault(); break;
+  }
+});
+
+// Pointer/touch handling on canvases (panning, pinch, twist, editor painting)
+function setupCanvasInput(canvas, isEditor) {
+  const pointers = new Map(); // id -> {x, y}
+  let pinchStart = null;       // {dist, angle, zoom, rotation}
+  let lastSingle = null;       // {x, y}
+  let didDrag = false;
+
+  canvas.addEventListener('pointerdown', (e) => {
+    e.preventDefault();
+    canvas.setPointerCapture(e.pointerId);
+    pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    didDrag = false;
+    if (pointers.size === 1) {
+      lastSingle = { x: e.clientX, y: e.clientY };
+      if (isEditor) {
+        editorState.pointerDownInfo = { x: e.clientX, y: e.clientY, didApply: false };
+        // If a paint tool, apply immediately.
+        if (editorState.tool !== 'camera') {
+          if (applyEditorPaint(e.clientX, e.clientY)) {
+            editorState.pointerDownInfo.didApply = true;
+          }
+        }
+      }
+    } else if (pointers.size === 2) {
+      const pts = Array.from(pointers.values());
+      const dx = pts[1].x - pts[0].x, dy = pts[1].y - pts[0].y;
+      const cam = isEditor ? editorState.cam : gameState.cam;
+      pinchStart = {
+        dist: Math.hypot(dx, dy),
+        angle: Math.atan2(dy, dx),
+        zoom: cam.targetZoom,
+        rotation: cam.targetRotation
+      };
+    }
+  });
+
+  canvas.addEventListener('pointermove', (e) => {
+    if (!pointers.has(e.pointerId)) return;
+    const prev = pointers.get(e.pointerId);
+    pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    const cam = isEditor ? editorState.cam : gameState.cam;
+    if (pointers.size === 1) {
+      const dx = e.clientX - lastSingle.x;
+      const dy = e.clientY - lastSingle.y;
+      if (Math.hypot(dx, dy) > 3) didDrag = true;
+      if (isEditor && editorState.tool !== 'camera') {
+        // Continuous paint while dragging on paint tool
+        if (didDrag) applyEditorPaint(e.clientX, e.clientY);
+      } else {
+        cam.targetPan.x += dx;
+        cam.targetPan.y += dy;
+        cam.pan.x += dx;
+        cam.pan.y += dy;
+      }
+      lastSingle = { x: e.clientX, y: e.clientY };
+    } else if (pointers.size === 2 && pinchStart) {
+      const pts = Array.from(pointers.values());
+      const dx2 = pts[1].x - pts[0].x, dy2 = pts[1].y - pts[0].y;
+      const dist = Math.hypot(dx2, dy2);
+      const angle = Math.atan2(dy2, dx2);
+      cam.targetZoom = clamp(pinchStart.zoom * (dist / pinchStart.dist), 0.3, 4);
+      cam.targetRotation = pinchStart.rotation + (angle - pinchStart.angle) / (Math.PI / 2);
+    }
+  });
+
+  function endPointer(e) {
+    if (pointers.has(e.pointerId)) {
+      pointers.delete(e.pointerId);
+    }
+    if (pointers.size < 2) pinchStart = null;
+    if (isEditor && editorState.pointerDownInfo && !didDrag && !editorState.pointerDownInfo.didApply && pointers.size === 0) {
+      // Single-tap with paint tool but the tool didn't paint (e.g., camera tool) — nothing.
+    }
+    if (pointers.size === 0) editorState.pointerDownInfo = null;
+  }
+  canvas.addEventListener('pointerup', endPointer);
+  canvas.addEventListener('pointercancel', endPointer);
+
+  canvas.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    const cam = isEditor ? editorState.cam : gameState.cam;
+    const factor = e.deltaY < 0 ? 1.12 : 1 / 1.12;
+    cam.targetZoom = clamp(cam.targetZoom * factor, 0.3, 4);
+  }, { passive: false });
+
+  canvas.addEventListener('contextmenu', e => e.preventDefault());
+}
+
+// ============================================================================
+// EDITOR
+// ============================================================================
+function loadEditorLevel(idx) {
+  editorState.levelIdx = idx;
+  editorState.level = expandLevel(LEVELS[idx]);
+  centerCamera(editorState.cam, editorState.level);
+  document.getElementById('ed-name').value = editorState.level.name;
+  document.getElementById('ed-desc').value = editorState.level.desc;
+  document.getElementById('ed-width').value = editorState.level.width;
+  document.getElementById('ed-height').value = editorState.level.height;
+  renderLevelsList();
+}
+function persistEditorLevel() {
+  // Push editor's expanded level back to LEVELS[idx].
+  LEVELS[editorState.levelIdx] = collapseLevel(editorState.level);
+}
+function renderLevelsList() {
+  const list = document.getElementById('levels-list');
+  list.innerHTML = '';
+  LEVELS.forEach((L, i) => {
+    const item = document.createElement('div');
+    item.className = 'item' + (i === editorState.levelIdx ? ' active' : '');
+    item.textContent = L.name;
+    item.addEventListener('click', () => {
+      persistEditorLevel();
+      loadEditorLevel(i);
+    });
+    list.appendChild(item);
+  });
+}
+function renderTools() {
+  const root = document.getElementById('tools');
+  root.innerHTML = '';
+  const tools = [
+    { id: 'camera', label: t('tool_camera') },
+    { id: 'goal',   label: t('tool_goal') },
+    { id: 'start',  label: t('tool_start') },
+    { id: 'erase',  label: t('tool_erase') },
+    { id: 'h0', label: 'H 0' }, { id: 'h1', label: 'H 1' }, { id: 'h2', label: 'H 2' },
+    { id: 'h3', label: 'H 3' }, { id: 'h4', label: 'H 4' }, { id: 'h5', label: 'H 5' },
+    { id: 'h6', label: 'H 6' }, { id: 'h7', label: 'H 7' }, { id: 'h8', label: 'H 8' }, { id: 'h9', label: 'H 9' },
+  ];
+  for (const tool of tools) {
+    const b = document.createElement('button');
+    b.dataset.tool = tool.id;
+    b.textContent = tool.label;
+    if (editorState.tool === tool.id) b.classList.add('active');
+    b.addEventListener('click', () => {
+      editorState.tool = tool.id;
+      if (tool.id.startsWith('h')) editorState.paintHeight = parseInt(tool.id.slice(1), 10);
+      renderTools();
+    });
+    root.appendChild(b);
+  }
+}
+
+// Project (event.clientX, clientY) back to grid coordinates for editor.
+function screenToGrid(canvas, cam, level, clientX, clientY) {
+  const rect = canvas.getBoundingClientRect();
+  const W = canvas.clientWidth, H = canvas.clientHeight;
+  // Inverse of render transform: translate then scale.
+  const localX = (clientX - rect.left - W/2 - cam.pan.x) / cam.zoom;
+  const localY = (clientY - rect.top  - H/2 - cam.pan.y) / cam.zoom;
+  // For each tile, compute the projected screen position and check if (localX, localY) lies inside the top diamond.
+  // Iterate from top (front-most) back, picking the topmost tile under cursor.
+  const items = [];
+  for (let y = 0; y < level.height; y++) {
+    for (let x = 0; x < level.width; x++) {
+      const [rx, ry] = applyRotation(x, y, level.width, level.height, cam.rotation);
+      const [sx, sy] = project(rx, ry, level.heights[y][x]);
+      items.push({ x, y, sx, sy, depth: rx + ry, height: level.heights[y][x] });
+    }
+  }
+  // Sort front-most first (highest depth first; for equal depth, higher height first)
+  items.sort((a, b) => (b.depth - a.depth) || (b.height - a.height));
+  for (const it of items) {
+    const dx = localX - it.sx;
+    const dy = localY - it.sy;
+    // Inside the diamond if |dx|/(W/2) + |dy|/(H/2) <= 1
+    if (Math.abs(dx) / (TILE_W/2) + Math.abs(dy) / (TILE_H/2) <= 1) {
+      return { x: it.x, y: it.y };
+    }
+  }
+  return null;
+}
+
+function applyEditorPaint(clientX, clientY) {
+  const canvas = document.getElementById('editor-canvas');
+  const hit = screenToGrid(canvas, editorState.cam, editorState.level, clientX, clientY);
+  if (!hit) return false;
+  const { x, y } = hit;
+  const lvl = editorState.level;
+  const tool = editorState.tool;
+  if (tool === 'camera') return false;
+  if (tool.startsWith('h')) {
+    lvl.heights[y][x] = parseInt(tool.slice(1), 10);
+  } else if (tool === 'erase') {
+    lvl.heights[y][x] = 0;
+    lvl.goalMap[y][x] = false;
+    lvl.goals = lvl.goals.filter(([gx, gy]) => !(gx === x && gy === y));
+  } else if (tool === 'goal') {
+    const isGoal = lvl.goalMap[y][x];
+    lvl.goalMap[y][x] = !isGoal;
+    if (!isGoal) {
+      lvl.goals.push([x, y]);
+    } else {
+      lvl.goals = lvl.goals.filter(([gx, gy]) => !(gx === x && gy === y));
+    }
+  } else if (tool === 'start') {
+    if (lvl.startPos[0] === x && lvl.startPos[1] === y) {
+      lvl.startDir = (lvl.startDir + 1) % 4;
+    } else {
+      lvl.startPos = [x, y];
+    }
+  }
+  persistEditorLevel();
+  return true;
+}
+
+// ============================================================================
+// IMPORT / EXPORT
+// ============================================================================
+function exportLevelsJson() {
+  // Pull editor's working level into LEVELS first.
+  if (editorState.level) persistEditorLevel();
+  const data = JSON.stringify(LEVELS, null, 2);
+  const blob = new Blob([data], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'botbright-levels.json';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+function importLevelsJson(file) {
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const parsed = JSON.parse(reader.result);
+      if (!Array.isArray(parsed) || parsed.length === 0) throw new Error('Invalid format');
+      // Minimal validation
+      for (const L of parsed) {
+        if (!L.map || !L.start_position || !L.start_direction || !L.goals) {
+          throw new Error('Each level needs map, start_position, start_direction, goals.');
+        }
+      }
+      LEVELS = parsed;
+      editorState.levelIdx = 0;
+      loadEditorLevel(0);
+      renderLevelGrid();
+      alert(t('import_ok', { n: LEVELS.length }));
+    } catch (err) {
+      alert(t('import_fail', { msg: err.message }));
+    }
+  };
+  reader.readAsText(file);
+}
+
+// ============================================================================
+// LEVEL CARDS (Start Screen)
+// ============================================================================
+function renderLevelGrid() {
+  const grid = document.getElementById('level-grid');
+  grid.innerHTML = '';
+  LEVELS.forEach((L, i) => {
+    const card = document.createElement('div');
+    card.className = 'level-card';
+    const canvas = document.createElement('canvas');
+    canvas.width = 360;
+    canvas.height = 240;
+    const name = document.createElement('div');
+    name.className = 'name';
+    name.textContent = L.name;
+    const desc = document.createElement('div');
+    desc.className = 'desc';
+    desc.textContent = L.description || '';
+    card.appendChild(canvas);
+    card.appendChild(name);
+    card.appendChild(desc);
+    card.addEventListener('click', () => {
+      gameState.levelIdx = i;
+      showGame();
+    });
+    grid.appendChild(card);
+    // Draw thumbnail
+    drawThumbnail(canvas, expandLevel(L));
+  });
+}
+function drawThumbnail(canvas, level) {
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  ctx.fillStyle = getCss('--panel-2');
+  ctx.fillRect(0, 0, W, H);
+  // Compute bounding box of projected tiles
+  let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+  for (let y = 0; y < level.height; y++) {
+    for (let x = 0; x < level.width; x++) {
+      const [sx, sy] = project(x, y, level.heights[y][x]);
+      minX = Math.min(minX, sx - TILE_W/2);
+      maxX = Math.max(maxX, sx + TILE_W/2);
+      minY = Math.min(minY, sy - TILE_H/2);
+      maxY = Math.max(maxY, sy + TILE_H/2 + level.heights[y][x] * HALF_STEP);
+    }
+  }
+  const scale = Math.min(W / (maxX - minX), H / (maxY - minY)) * 0.85;
+  ctx.translate(W/2 - (minX + maxX)/2 * scale, H/2 - (minY + maxY)/2 * scale);
+  ctx.scale(scale, scale);
+  // Draw tiles in z order (no rotation for thumbnails).
+  const list = [];
+  for (let y = 0; y < level.height; y++) {
+    for (let x = 0; x < level.width; x++) {
+      list.push({ x, y, d: x + y, h: level.heights[y][x] });
+    }
+  }
+  list.sort((a, b) => a.d - b.d);
+  const c = colors();
+  for (const it of list) {
+    const [sx, sy] = project(it.x, it.y, it.h);
+    const isGoal = level.goalMap[it.y][it.x];
+    drawTile(ctx, sx, sy, it.h, isGoal, false, c);
+  }
+}
+
+// ============================================================================
+// SCREEN NAVIGATION
+// ============================================================================
+function showStart() {
+  document.getElementById('start-screen').classList.remove('hidden');
+  document.getElementById('game-screen').classList.add('hidden');
+  document.getElementById('editor-screen').classList.add('hidden');
+  renderLevelGrid();
+}
+function showGame() {
+  document.getElementById('start-screen').classList.add('hidden');
+  document.getElementById('game-screen').classList.remove('hidden');
+  document.getElementById('editor-screen').classList.add('hidden');
+  resetLevel(false);  // fresh programs when entering a new level from menu
+  hideWinOverlay();
+  hideHaltOverlay();
+  setTimeout(() => resizeCanvases(), 0);
+}
+function showEditor() {
+  document.getElementById('start-screen').classList.add('hidden');
+  document.getElementById('game-screen').classList.add('hidden');
+  document.getElementById('editor-screen').classList.remove('hidden');
+  loadEditorLevel(editorState.levelIdx);
+  renderTools();
+  setTimeout(() => resizeCanvases(), 0);
+}
+
+// ============================================================================
+// MAIN LOOP / INIT
+// ============================================================================
+const gameCanvas = document.getElementById('game-canvas');
+const editorCanvas = document.getElementById('editor-canvas');
+const gameCtx = gameCanvas.getContext('2d');
+const editorCtx = editorCanvas.getContext('2d');
+
+function resizeCanvases() {
+  for (const cv of [gameCanvas, editorCanvas]) {
+    const dpr = window.devicePixelRatio || 1;
+    cv.width = cv.clientWidth * dpr;
+    cv.height = cv.clientHeight * dpr;
+  }
+}
+window.addEventListener('resize', resizeCanvases);
+window.addEventListener('orientationchange', resizeCanvases);
+
+function frame(now) {
+  // Game
+  if (!document.getElementById('game-screen').classList.contains('hidden')) {
+    updateCamera(gameState.cam);
+    tickExecution(now);
+    if (gameState.level && gameState.bot) {
+      // Render bot at interpolated position.
+      const bot = gameState.bot;
+      const renderBot = {
+        x: bot.animX !== undefined ? bot.animX : bot.x,
+        y: bot.animY !== undefined ? bot.animY : bot.y,
+        height: bot.animH !== undefined ? bot.animH : bot.height,
+        facingAngle: bot.animAngle !== undefined ? bot.animAngle : bot.facingAngle,
+        srcX: bot.srcX, srcY: bot.srcY, dstX: bot.dstX, dstY: bot.dstY,
+      };
+      renderScene(gameCtx, gameCanvas, gameState.level, renderBot, gameState.cam);
+    }
+  }
+  // Editor
+  if (!document.getElementById('editor-screen').classList.contains('hidden')) {
+    updateCamera(editorState.cam);
+    if (editorState.level) {
+      const startMarker = {
+        x: editorState.level.startPos[0],
+        y: editorState.level.startPos[1],
+        height: editorState.level.heights[editorState.level.startPos[1]][editorState.level.startPos[0]],
+        direction: editorState.level.startDir
+      };
+      renderScene(editorCtx, editorCanvas, editorState.level, null, editorState.cam, { startMarker });
+    }
+  }
+  requestAnimationFrame(frame);
+}
+
+// ============================================================================
+// COLOR SCHEMES
+// ============================================================================
+const COLOR_PRESETS = {
+  Default:    { tile:'#c4c4c4', goal:'#4a9ed8', lit:'#f5cc40', bg:'#f5f5f5', bot:'#e0e0e0' },
+  Midnight:   { tile:'#3a3270', goal:'#8a5cd8', lit:'#ffdc8a', bg:'#0e0a28', bot:'#c8b8e8' },
+  Forest:     { tile:'#7d9c69', goal:'#3a7f3a', lit:'#e8d770', bg:'#2c3e2c', bot:'#d4c8a8' },
+  Sunset:     { tile:'#d4a574', goal:'#c25450', lit:'#f5e054', bg:'#3a2535', bot:'#f0d4b8' },
+  Ocean:      { tile:'#7eb2c5', goal:'#1f6e8c', lit:'#f0eb70', bg:'#0d2a3a', bot:'#d4e4ec' },
+  Candy:      { tile:'#f0a3c8', goal:'#9050d0', lit:'#fffa70', bg:'#2a1530', bot:'#f8d4ea' },
+  Monochrome: { tile:'#888888', goal:'#dddddd', lit:'#ffffff', bg:'#1a1a1a', bot:'#bbbbbb' },
+  Lava:       { tile:'#5a3030', goal:'#902020', lit:'#ffb060', bg:'#15080a', bot:'#e8c4a0' },
+};
+
+function hex6(c) {
+  c = (c || '').trim();
+  if (/^#[0-9a-f]{3}$/i.test(c)) return '#' + c[1] + c[1] + c[2] + c[2] + c[3] + c[3];
+  if (/^#[0-9a-f]{6}$/i.test(c)) return c.toLowerCase();
+  return '#888888';
+}
+function darken(hex, factor) {
+  const n = parseInt(hex6(hex).slice(1), 16);
+  const r = clamp(Math.round(((n >> 16) & 0xff) * factor), 0, 255);
+  const g = clamp(Math.round(((n >> 8) & 0xff) * factor), 0, 255);
+  const b = clamp(Math.round((n & 0xff) * factor), 0, 255);
+  return '#' + ((1 << 24) | (r << 16) | (g << 8) | b).toString(16).slice(1);
+}
+function applyColorScheme(p) {
+  const r = document.documentElement.style;
+  r.setProperty('--tile-top',   p.tile);
+  r.setProperty('--tile-light', darken(p.tile, 0.85));
+  r.setProperty('--tile-dark',  darken(p.tile, 0.65));
+  r.setProperty('--tile-edge',  darken(p.tile, 0.45));
+  r.setProperty('--goal-top',   p.goal);
+  r.setProperty('--goal-light', darken(p.goal, 0.85));
+  r.setProperty('--goal-dark',  darken(p.goal, 0.65));
+  r.setProperty('--lit-top',    p.lit);
+  r.setProperty('--lit-light',  darken(p.lit, 0.85));
+  r.setProperty('--lit-dark',   darken(p.lit, 0.65));
+  r.setProperty('--bg',         p.bg);
+  r.setProperty('--bot-body',   p.bot);
+  r.setProperty('--bot-edge',   darken(p.bot, 0.55));
+}
+function readColorInputs() {
+  return {
+    tile: document.getElementById('color-tile').value,
+    goal: document.getElementById('color-goal').value,
+    lit:  document.getElementById('color-lit').value,
+    bg:   document.getElementById('color-bg').value,
+    bot:  document.getElementById('color-bot').value,
+  };
+}
+function setColorInputs(p) {
+  document.getElementById('color-tile').value = hex6(p.tile);
+  document.getElementById('color-goal').value = hex6(p.goal);
+  document.getElementById('color-lit').value  = hex6(p.lit);
+  document.getElementById('color-bg').value   = hex6(p.bg);
+  document.getElementById('color-bot').value  = hex6(p.bot);
+}
+function initColorControls() {
+  const sel = document.getElementById('color-preset');
+  sel.innerHTML = '';
+  // "Custom" placeholder (selected when user tweaks individual colors)
+  const customOpt = document.createElement('option');
+  customOpt.value = '__custom__';
+  customOpt.textContent = 'Custom';
+  sel.appendChild(customOpt);
+  for (const name of Object.keys(COLOR_PRESETS)) {
+    const opt = document.createElement('option');
+    opt.value = name;
+    opt.textContent = name;
+    sel.appendChild(opt);
+  }
+  // Sync inputs to currently-active CSS values
+  setColorInputs({
+    tile: hex6(getCss('--tile-top')),
+    goal: hex6(getCss('--goal-top')),
+    lit:  hex6(getCss('--lit-top')),
+    bg:   hex6(getCss('--bg')),
+    bot:  hex6(getCss('--bot-body')),
+  });
+  sel.value = 'Default';
+  sel.addEventListener('change', (e) => {
+    const p = COLOR_PRESETS[e.target.value];
+    if (!p) return;
+    setColorInputs(p);
+    applyColorScheme(p);
+  });
+  ['tile','goal','lit','bg','bot'].forEach(key => {
+    document.getElementById('color-' + key).addEventListener('input', () => {
+      applyColorScheme(readColorInputs());
+      sel.value = '__custom__';
+    });
+  });
+}
+
+// ============================================================================
+// WIRE UP UI
+// ============================================================================
+function init() {
+  populateLangPickers();
+  applyLang();
+  renderPalette();
+  setupDragHandlers(document.getElementById('game-sidebar'));
+
+  document.getElementById('editor-btn').addEventListener('click', showEditor);
+  document.getElementById('game-back-btn').addEventListener('click', () => { stopRun(); showStart(); });
+  document.getElementById('editor-back-btn').addEventListener('click', () => { persistEditorLevel(); showStart(); });
+  document.getElementById('test-play').addEventListener('click', () => {
+    persistEditorLevel();
+    gameState.levelIdx = editorState.levelIdx;
+    showGame();
+  });
+
+  document.getElementById('reset-btn').addEventListener('click', () => { stopRun(); hideWinOverlay(); resetLevel(true); });
+  document.getElementById('run-btn').addEventListener('click', () => {
+    if (gameState.running) stopRun();
+    else { hideWinOverlay(); startRun(); }
+  });
+  document.getElementById('speed').addEventListener('input', (e) => {
+    gameState.stepDuration = STEP_DURATIONS[e.target.value] || 400;
+  });
+
+  document.getElementById('win-replay').addEventListener('click', () => { hideWinOverlay(); resetLevel(true); });
+  document.getElementById('win-next').addEventListener('click', () => {
+    hideWinOverlay();
+    if (gameState.levelIdx < LEVELS.length - 1) {
+      gameState.levelIdx++;
+      resetLevel(false);
+    } else {
+      showStart();
+    }
+  });
+  document.getElementById('halt-ok').addEventListener('click', hideHaltOverlay);
+
+  // Editor wiring
+  document.getElementById('ed-name').addEventListener('input', (e) => { editorState.level.name = e.target.value; persistEditorLevel(); renderLevelsList(); });
+  document.getElementById('ed-desc').addEventListener('input', (e) => { editorState.level.desc = e.target.value; persistEditorLevel(); });
+  document.getElementById('apply-size').addEventListener('click', () => {
+    const w = clamp(parseInt(document.getElementById('ed-width').value, 10) || 8, 1, 32);
+    const h = clamp(parseInt(document.getElementById('ed-height').value, 10) || 8, 1, 32);
+    const old = editorState.level;
+    const newH = Array.from({length: h}, (_, y) => Array.from({length: w}, (_, x) =>
+      (y < old.height && x < old.width) ? old.heights[y][x] : 0));
+    const newGoalMap = Array.from({length: h}, (_, y) => Array.from({length: w}, (_, x) =>
+      (y < old.height && x < old.width) ? old.goalMap[y][x] : false));
+    const newGoals = [];
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) if (newGoalMap[y][x]) newGoals.push([x, y]);
+    old.width = w; old.height = h;
+    old.heights = newH; old.goalMap = newGoalMap; old.goals = newGoals;
+    old.litMap = Array.from({length: h}, () => Array(w).fill(false));
+    if (old.startPos[0] >= w) old.startPos[0] = w - 1;
+    if (old.startPos[1] >= h) old.startPos[1] = h - 1;
+    persistEditorLevel();
+    centerCamera(editorState.cam, old);
+  });
+  document.getElementById('add-level').addEventListener('click', () => {
+    const blank = {
+      name: 'New Level', description: '',
+      width: 8, height: 8, start_position: [0, 0], start_direction: 'E',
+      goals: [], map: Array(8).fill('00000000').join('\n')
+    };
+    LEVELS.push(blank);
+    editorState.levelIdx = LEVELS.length - 1;
+    loadEditorLevel(editorState.levelIdx);
+  });
+  document.getElementById('dup-level').addEventListener('click', () => {
+    persistEditorLevel();
+    const copy = JSON.parse(JSON.stringify(LEVELS[editorState.levelIdx]));
+    copy.name = copy.name + ' (copy)';
+    LEVELS.splice(editorState.levelIdx + 1, 0, copy);
+    editorState.levelIdx++;
+    loadEditorLevel(editorState.levelIdx);
+  });
+  document.getElementById('del-level').addEventListener('click', () => {
+    if (LEVELS.length <= 1) { alert(t('at_least_one')); return; }
+    if (!confirm(t('delete_confirm'))) return;
+    LEVELS.splice(editorState.levelIdx, 1);
+    editorState.levelIdx = Math.max(0, editorState.levelIdx - 1);
+    loadEditorLevel(editorState.levelIdx);
+  });
+  document.getElementById('export-btn').addEventListener('click', exportLevelsJson);
+  document.getElementById('import-btn').addEventListener('click', () => document.getElementById('import-file').click());
+  document.getElementById('import-file').addEventListener('change', (e) => {
+    const f = e.target.files[0];
+    if (f) importLevelsJson(f);
+    e.target.value = '';
+  });
+  document.getElementById('reset-levels').addEventListener('click', () => {
+    if (!confirm(t('reset_confirm'))) return;
+    LEVELS = JSON.parse(JSON.stringify(INITIAL_LEVELS));
+    editorState.levelIdx = 0;
+    loadEditorLevel(0);
+  });
+
+  setupCanvasInput(gameCanvas, false);
+  setupCanvasInput(editorCanvas, true);
+
+  setupResizeHandle(document.getElementById('game-resize'), document.getElementById('game-sidebar'));
+  setupResizeHandle(document.getElementById('editor-resize'), document.getElementById('editor-sidebar'));
+
+  initColorControls();
+
+  // Camera control buttons.
+  // Pan/zoom are hold-to-repeat (continuously nudges camera target each frame),
+  // rotate stays click-only.
+  const HOLD_ACTIONS = new Set(['pan-up','pan-down','pan-left','pan-right','zoom-in','zoom-out']);
+  let camHoldAction = null;
+  let camHoldRaf = null;
+  function camHoldStep() {
+    if (!camHoldAction) { camHoldRaf = null; return; }
+    const cam = gameState.cam;
+    switch (camHoldAction) {
+      case 'pan-up':    cam.targetPan.y += 6; break;
+      case 'pan-down':  cam.targetPan.y -= 6; break;
+      case 'pan-left':  cam.targetPan.x += 6; break;
+      case 'pan-right': cam.targetPan.x -= 6; break;
+      case 'zoom-in':   cam.targetZoom = clamp(cam.targetZoom * 1.02, 0.3, 4); break;
+      case 'zoom-out':  cam.targetZoom = clamp(cam.targetZoom / 1.02, 0.3, 4); break;
+    }
+    camHoldRaf = requestAnimationFrame(camHoldStep);
+  }
+  function startCamHold(action) {
+    camHoldAction = action;
+    if (camHoldRaf == null) camHoldRaf = requestAnimationFrame(camHoldStep);
+  }
+  function stopCamHold() { camHoldAction = null; }
+
+  document.querySelectorAll('[data-cam]').forEach(btn => {
+    const action = btn.dataset.cam;
+    if (HOLD_ACTIONS.has(action)) {
+      btn.addEventListener('pointerdown', (e) => {
+        e.preventDefault();
+        try { btn.setPointerCapture(e.pointerId); } catch (_) {}
+        startCamHold(action);
+      });
+      const release = (e) => {
+        stopCamHold();
+        try { btn.releasePointerCapture(e.pointerId); } catch (_) {}
+      };
+      btn.addEventListener('pointerup', release);
+      btn.addEventListener('pointercancel', release);
+      btn.addEventListener('pointerleave', stopCamHold);
+    } else {
+      btn.addEventListener('click', () => {
+        const cam = gameState.cam;
+        if (action === 'rot-left') cam.targetRotation -= 1;
+        else if (action === 'rot-right') cam.targetRotation += 1;
+      });
+    }
+  });
+
+  showStart();
+  resizeCanvases();
+  requestAnimationFrame(frame);
+}
+
+function setupResizeHandle(handle, sidebar) {
+  if (!handle || !sidebar) return;
+  let active = false;
+  handle.addEventListener('pointerdown', (e) => {
+    active = true;
+    handle.classList.add('dragging');
+    handle.setPointerCapture(e.pointerId);
+    e.preventDefault();
+  });
+  handle.addEventListener('pointermove', (e) => {
+    if (!active) return;
+    const rtl = document.documentElement.dir === 'rtl';
+    const fromEdge = rtl ? e.clientX : (window.innerWidth - e.clientX);
+    const newW = clamp(fromEdge, 240, Math.min(720, window.innerWidth - 200));
+    sidebar.style.width = newW + 'px';
+    resizeCanvases();
+  });
+  function end(e) {
+    if (active) {
+      active = false;
+      handle.classList.remove('dragging');
+      try { handle.releasePointerCapture(e.pointerId); } catch (_) {}
+    }
+  }
+  handle.addEventListener('pointerup', end);
+  handle.addEventListener('pointercancel', end);
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
