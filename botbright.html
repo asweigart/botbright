@@ -2638,6 +2638,7 @@ function keyToAction(e) {
     case '-': case '_':                    return 'zoom-out';
     case 'q': case 'Q': case 'PageUp':     return 'rot-left';
     case 'e': case 'E': case 'PageDown':   return 'rot-right';
+    case '0':                              return 'reset-view';
   }
   return null;
 }
@@ -2664,6 +2665,14 @@ window.addEventListener('keydown', (e) => {
   if (action === 'rot-left' || action === 'rot-right') {
     // Discrete: one quarter-turn per actual key press, ignore OS auto-repeat.
     if (!e.repeat) cam.targetRotation += (action === 'rot-right' ? 1 : -1);
+    return;
+  }
+  if (action === 'reset-view') {
+    if (!e.repeat) {
+      cam.targetPan.x = 0; cam.targetPan.y = 0;
+      cam.targetZoom = 1;
+      cam.targetRotation = 0;
+    }
     return;
   }
   heldKeyActions.add(action);
