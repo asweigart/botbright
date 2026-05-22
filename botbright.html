@@ -813,19 +813,71 @@ button.active {
 // ============================================================================
 // INITIAL LEVELS
 // ============================================================================
+// Level name and description are objects keyed by language code. The level
+// editor only writes to the currently-selected language slot; the other
+// slots are preserved on edit. Strings (legacy format) are still accepted
+// and treated as the English fallback.
 const INITIAL_LEVELS = [
-  {name:"LEVEL 1",description:"Program your bot to move and light up the blue tiles!",width:8,height:8,start_position:[2,3],start_direction:"E",goals:[[4,3]],map:"22222222\n00000000\n00000000\n00000000\n00000000\n00000000\n00000000\n22222222"},
-  {name:"LEVEL 2",description:"Try turning your bot!",width:8,height:8,start_position:[2,3],start_direction:"E",goals:[[6,3]],map:"32111123\n00000000\n00000000\n00002000\n00000000\n00000000\n00000000\n32111123"},
-  {name:"LEVEL 3",description:"Jumping can get you over barriers!",width:8,height:8,start_position:[0,4],start_direction:"E",goals:[[4,2],[4,3],[4,4]],map:"00100000\n00100000\n00100000\n00100000\n00100000\n00100000\n00100000\n00100000"},
-  {name:"LEVEL 4",description:"Jumping can also get you to new heights!",width:8,height:8,start_position:[2,6],start_direction:"N",goals:[[7,2]],map:"00000000\n00000000\n00222222\n00200000\n00100000\n00000000\n00000000\n00000000"},
-  {name:"LEVEL 5",description:"Get it now?",width:8,height:8,start_position:[3,5],start_direction:"E",goals:[[3,2]],map:"00000000\n00000000\n00043210\n00000010\n00000010\n00001110\n00000000\n00000000"},
-  {name:"LEVEL 6",description:"Not enough space? Try creating functions and using F1 and F2.",width:8,height:8,start_position:[2,6],start_direction:"N",goals:[[4,3],[5,0],[5,6]],map:"00000200\n00000200\n00000200\n00234200\n00100200\n00000200\n00000200\n00000000"},
-  {name:"LEVEL 7",description:"Re-using functions is great for repetitive tasks!",width:8,height:8,start_position:[0,3],start_direction:"E",goals:[[1,3],[1,4],[2,3],[2,4],[3,3],[3,4],[4,3],[4,4],[5,3],[5,4],[6,3],[6,4],[7,3],[7,4]],map:"00000000\n00000000\n00000000\n00000000\n00000000\n00000000\n00000000\n00000000"},
-  {name:"LEVEL 8",description:"Functions are fun!",width:8,height:8,start_position:[2,5],start_direction:"N",goals:[[2,1],[2,3],[4,1],[4,3],[4,5],[6,1],[6,3],[6,5]],map:"00000000\n00111110\n00101010\n00111110\n00101010\n00001110\n00000000\n00000000"},
-  {name:"LEVEL 9",description:"Now you're thinking like a programmer.",width:8,height:8,start_position:[1,5],start_direction:"E",goals:[[2,1],[2,2],[2,3],[2,4],[3,1],[3,4],[4,1],[4,4],[5,1],[5,2],[5,3],[5,4]],map:"00100100\n01211210\n00100100\n00100100\n01211210\n00100100\n00000000\n00000000"},
-  {name:"LEVEL 10",description:"Do you feel your mind getting numb yet?",width:8,height:8,start_position:[0,6],start_direction:"E",goals:[[0,5],[7,4]],map:"00000000\n00000000\n00000000\n00000000\n00043422\n22242320\n00001000\n00000000"},
-  {name:"LEVEL 11",description:"Second-to-last level. Are you up to it?",width:8,height:8,start_position:[0,7],start_direction:"E",goals:[[0,2],[0,3],[0,4],[0,5],[0,6],[1,2],[1,3],[1,4],[1,5],[1,6],[1,7],[2,2],[2,3],[2,4],[2,5],[2,6],[2,7],[3,2],[3,3],[3,4],[3,5],[3,6],[3,7],[4,2],[4,3],[4,4],[4,5],[4,6],[4,7],[5,2],[5,3],[5,4],[5,5],[5,6],[5,7],[6,2],[6,3],[6,4],[6,5],[6,6],[6,7],[7,2],[7,3],[7,4],[7,5],[7,6],[7,7]],map:"33333333\n22222222\n11111111\n00000000\n11111111\n00000000\n11111111\n00000000"},
-  {name:"LEVEL 12",description:"The final level. Don't get dizzy!",width:8,height:8,start_position:[4,7],start_direction:"N",goals:[[1,2],[1,3],[1,4],[1,5],[2,2],[2,5],[3,2],[3,5],[4,2],[4,3],[4,4],[4,5],[5,2],[5,5],[6,2],[6,5],[7,2],[7,3],[7,4],[7,5]],map:"00000000\n00000000\n01234321\n02003002\n03002003\n04321234\n00000000\n00000000"}
+  {
+    name:{en:"LEVEL 1",es:"NIVEL 1",fr:"NIVEAU 1",de:"LEVEL 1",it:"LIVELLO 1",pt:"NÍVEL 1",ru:"УРОВЕНЬ 1",zh:"关卡 1",ja:"レベル 1",ko:"레벨 1",hi:"लेवल 1",bn:"লেভেল 1",vi:"MÀN 1",ar:"المستوى 1",th:"ด่าน 1",tl:"LEVEL 1",no:"NIVÅ 1",nl:"LEVEL 1",sv:"BANA 1",tr:"SEVİYE 1",sw:"NGAZI 1",id:"LEVEL 1",pl:"POZIOM 1"},
+    description:{en:"Program your bot to move and light up the blue tiles!",es:"¡Programa tu robot para moverse e iluminar las baldosas azules!",fr:"Programme ton robot pour qu'il se déplace et illumine les cases bleues !",de:"Programmiere deinen Roboter, damit er sich bewegt und die blauen Felder erleuchtet!",it:"Programma il tuo robot per muoversi e illuminare le tessere blu!",pt:"Programe seu robô para se mover e iluminar os blocos azuis!",ru:"Запрограммируй робота двигаться и зажигать синие плитки!",zh:"为机器人编程，让它移动并点亮蓝色方块！",ja:"ロボットをプログラムして、青いタイルを動いて点灯させよう！",ko:"로봇을 프로그래밍해서 움직이고 파란 타일을 켜자!",hi:"अपने रोबोट को चलने और नीली टाइलें रोशन करने के लिए प्रोग्राम करें!",bn:"তোমার রোবটকে নীল টাইলগুলোতে গিয়ে আলো জ্বালাতে প্রোগ্রাম করো!",vi:"Lập trình robot di chuyển và thắp sáng các ô màu xanh!",ar:"برمج روبوتك للتحرك وإضاءة البلاطات الزرقاء!",th:"เขียนโปรแกรมให้หุ่นยนต์เคลื่อนที่และจุดไฟกระเบื้องสีฟ้า!",tl:"I-program ang robot mo na gumalaw at paliwanagan ang mga asul na tile!",no:"Programmer roboten din til å bevege seg og lyse opp de blå feltene!",nl:"Programmeer je robot om te bewegen en de blauwe tegels te verlichten!",sv:"Programmera roboten att röra sig och tända de blå rutorna!",tr:"Robotunu hareket ettir ve mavi karoları yak!",sw:"Programu roboti yako kutembea na kuwasha vigae vya buluu!",id:"Program robotmu untuk bergerak dan menyalakan ubin biru!",pl:"Zaprogramuj robota, aby się poruszał i rozświetlał niebieskie pola!"},
+    width:8,height:8,start_position:[2,3],start_direction:"E",goals:[[4,3]],map:"22222222\n00000000\n00000000\n00000000\n00000000\n00000000\n00000000\n22222222"
+  },
+  {
+    name:{en:"LEVEL 2",es:"NIVEL 2",fr:"NIVEAU 2",de:"LEVEL 2",it:"LIVELLO 2",pt:"NÍVEL 2",ru:"УРОВЕНЬ 2",zh:"关卡 2",ja:"レベル 2",ko:"레벨 2",hi:"लेवल 2",bn:"লেভেল 2",vi:"MÀN 2",ar:"المستوى 2",th:"ด่าน 2",tl:"LEVEL 2",no:"NIVÅ 2",nl:"LEVEL 2",sv:"BANA 2",tr:"SEVİYE 2",sw:"NGAZI 2",id:"LEVEL 2",pl:"POZIOM 2"},
+    description:{en:"Try turning your bot!",es:"¡Intenta girar tu robot!",fr:"Essaie de faire tourner ton robot !",de:"Lass deinen Roboter abbiegen!",it:"Prova a far girare il tuo robot!",pt:"Tente girar seu robô!",ru:"Попробуй повернуть робота!",zh:"试试让机器人转弯！",ja:"ロボットを回してみよう！",ko:"로봇을 돌려 보세요!",hi:"अपने रोबोट को मोड़ने की कोशिश करें!",bn:"রোবটকে ঘোরানোর চেষ্টা করো!",vi:"Hãy thử quay robot!",ar:"جرّب أن تدوّر روبوتك!",th:"ลองหมุนหุ่นยนต์ดู!",tl:"Subukang paikutin ang robot mo!",no:"Prøv å snu roboten din!",nl:"Probeer je robot te draaien!",sv:"Försök svänga roboten!",tr:"Robotunu döndürmeyi dene!",sw:"Jaribu kugeuza roboti yako!",id:"Coba putar robotmu!",pl:"Spróbuj obrócić robota!"},
+    width:8,height:8,start_position:[2,3],start_direction:"E",goals:[[6,3]],map:"32111123\n00000000\n00000000\n00002000\n00000000\n00000000\n00000000\n32111123"
+  },
+  {
+    name:{en:"LEVEL 3",es:"NIVEL 3",fr:"NIVEAU 3",de:"LEVEL 3",it:"LIVELLO 3",pt:"NÍVEL 3",ru:"УРОВЕНЬ 3",zh:"关卡 3",ja:"レベル 3",ko:"레벨 3",hi:"लेवल 3",bn:"লেভেল 3",vi:"MÀN 3",ar:"المستوى 3",th:"ด่าน 3",tl:"LEVEL 3",no:"NIVÅ 3",nl:"LEVEL 3",sv:"BANA 3",tr:"SEVİYE 3",sw:"NGAZI 3",id:"LEVEL 3",pl:"POZIOM 3"},
+    description:{en:"Jumping can get you over barriers!",es:"¡Saltar te ayuda a superar barreras!",fr:"Sauter te permet de franchir des obstacles !",de:"Mit Sprüngen überwindest du Hindernisse!",it:"Saltare ti aiuta a superare le barriere!",pt:"Pular ajuda a passar por barreiras!",ru:"Прыжки помогут перебраться через препятствия!",zh:"跳跃可以越过障碍！",ja:"ジャンプで障害物を越えよう！",ko:"점프하면 장애물을 넘을 수 있어요!",hi:"कूदने से बाधाएं पार कर सकते हैं!",bn:"লাফ দিয়ে বাধা পার করা যায়!",vi:"Nhảy giúp vượt qua chướng ngại!",ar:"القفز يساعدك على تخطي العوائق!",th:"การกระโดดช่วยให้ข้ามอุปสรรคได้!",tl:"Makakatawid ka sa harang gamit ang pagtalon!",no:"Hopping hjelper deg over hindringer!",nl:"Springen helpt je over hindernissen!",sv:"Hopp hjälper dig över hinder!",tr:"Atlamak engelleri aşmana yardımcı olur!",sw:"Kuruka kunakusaidia kuvuka vizuizi!",id:"Melompat bisa melewati rintangan!",pl:"Skakanie pomaga przejść przez przeszkody!"},
+    width:8,height:8,start_position:[0,4],start_direction:"E",goals:[[4,2],[4,3],[4,4]],map:"00100000\n00100000\n00100000\n00100000\n00100000\n00100000\n00100000\n00100000"
+  },
+  {
+    name:{en:"LEVEL 4",es:"NIVEL 4",fr:"NIVEAU 4",de:"LEVEL 4",it:"LIVELLO 4",pt:"NÍVEL 4",ru:"УРОВЕНЬ 4",zh:"关卡 4",ja:"レベル 4",ko:"레벨 4",hi:"लेवल 4",bn:"লেভেল 4",vi:"MÀN 4",ar:"المستوى 4",th:"ด่าน 4",tl:"LEVEL 4",no:"NIVÅ 4",nl:"LEVEL 4",sv:"BANA 4",tr:"SEVİYE 4",sw:"NGAZI 4",id:"LEVEL 4",pl:"POZIOM 4"},
+    description:{en:"Jumping can also get you to new heights!",es:"¡Saltar también te lleva a nuevas alturas!",fr:"Sauter peut aussi t'amener à de nouvelles hauteurs !",de:"Springen bringt dich auch in neue Höhen!",it:"Saltare ti porta anche più in alto!",pt:"Pular também te leva a novas alturas!",ru:"Прыжки могут поднять тебя на новую высоту!",zh:"跳跃还能让你登上新高度！",ja:"ジャンプで新たな高さへも行ける！",ko:"점프로 새로운 높이에도 올라갈 수 있어요!",hi:"कूदने से नई ऊंचाई पर भी पहुंच सकते हैं!",bn:"লাফ দিয়ে নতুন উচ্চতায়ও যাওয়া যায়!",vi:"Nhảy còn đưa bạn lên tầm cao mới!",ar:"القفز يأخذك أيضًا إلى مرتفعات جديدة!",th:"การกระโดดพาคุณไปสู่ความสูงใหม่ได้ด้วย!",tl:"Makakaakyat ka rin sa bagong taas sa pagtalon!",no:"Hopping kan også løfte deg til nye høyder!",nl:"Springen brengt je ook naar nieuwe hoogtes!",sv:"Hopp kan också föra dig till nya höjder!",tr:"Atlamak yeni yüksekliklere de çıkarır!",sw:"Kuruka pia kunakufikisha kwenye urefu mpya!",id:"Melompat juga bisa membawamu ke ketinggian baru!",pl:"Skakanie wynosi Cię też na nowe wysokości!"},
+    width:8,height:8,start_position:[2,6],start_direction:"N",goals:[[7,2]],map:"00000000\n00000000\n00222222\n00200000\n00100000\n00000000\n00000000\n00000000"
+  },
+  {
+    name:{en:"LEVEL 5",es:"NIVEL 5",fr:"NIVEAU 5",de:"LEVEL 5",it:"LIVELLO 5",pt:"NÍVEL 5",ru:"УРОВЕНЬ 5",zh:"关卡 5",ja:"レベル 5",ko:"레벨 5",hi:"लेवल 5",bn:"লেভেল 5",vi:"MÀN 5",ar:"المستوى 5",th:"ด่าน 5",tl:"LEVEL 5",no:"NIVÅ 5",nl:"LEVEL 5",sv:"BANA 5",tr:"SEVİYE 5",sw:"NGAZI 5",id:"LEVEL 5",pl:"POZIOM 5"},
+    description:{en:"Get it now?",es:"¿Lo entiendes ahora?",fr:"Tu comprends maintenant ?",de:"Verstanden?",it:"Adesso ci sei?",pt:"Já pegou?",ru:"Уловил?",zh:"明白了吧？",ja:"わかった？",ko:"이제 알겠죠?",hi:"अब समझ आया?",bn:"এবার বুঝলে?",vi:"Hiểu rồi chứ?",ar:"هل فهمت الآن؟",th:"เข้าใจหรือยัง?",tl:"Kuha mo na?",no:"Forstår du nå?",nl:"Snap je het al?",sv:"Fattar du nu?",tr:"Şimdi anladın mı?",sw:"Umeelewa sasa?",id:"Sudah paham?",pl:"Już rozumiesz?"},
+    width:8,height:8,start_position:[3,5],start_direction:"E",goals:[[3,2]],map:"00000000\n00000000\n00043210\n00000010\n00000010\n00001110\n00000000\n00000000"
+  },
+  {
+    name:{en:"LEVEL 6",es:"NIVEL 6",fr:"NIVEAU 6",de:"LEVEL 6",it:"LIVELLO 6",pt:"NÍVEL 6",ru:"УРОВЕНЬ 6",zh:"关卡 6",ja:"レベル 6",ko:"레벨 6",hi:"लेवल 6",bn:"লেভেল 6",vi:"MÀN 6",ar:"المستوى 6",th:"ด่าน 6",tl:"LEVEL 6",no:"NIVÅ 6",nl:"LEVEL 6",sv:"BANA 6",tr:"SEVİYE 6",sw:"NGAZI 6",id:"LEVEL 6",pl:"POZIOM 6"},
+    description:{en:"Not enough space? Try creating functions and using F1 and F2.",es:"¿Falta espacio? Crea funciones y usa F1 y F2.",fr:"Pas assez de place ? Crée des fonctions avec F1 et F2.",de:"Zu wenig Platz? Erstelle Funktionen mit F1 und F2.",it:"Non c'è abbastanza spazio? Crea funzioni con F1 e F2.",pt:"Sem espaço? Crie funções e use F1 e F2.",ru:"Не хватает места? Создай функции и используй F1 и F2.",zh:"空间不够？试着用 F1 和 F2 创建函数。",ja:"スペースが足りない？F1 と F2 で関数を作ろう。",ko:"공간이 부족해요? F1과 F2로 함수를 만들어 보세요.",hi:"जगह कम है? F1 और F2 से फ़ंक्शन बनाएं।",bn:"জায়গা কম? F1 আর F2 দিয়ে ফাংশন বানাও।",vi:"Không đủ chỗ? Tạo hàm với F1 và F2.",ar:"لا تكفي المساحة؟ أنشئ دوال باستخدام F1 و F2.",th:"พื้นที่ไม่พอ? ลองสร้างฟังก์ชันโดยใช้ F1 และ F2",tl:"Kulang ang puwang? Gumawa ng functions gamit ang F1 at F2.",no:"Ikke nok plass? Lag funksjoner med F1 og F2.",nl:"Te weinig ruimte? Maak functies met F1 en F2.",sv:"Slut på utrymme? Skapa funktioner med F1 och F2.",tr:"Alan yetersiz mi? F1 ve F2 ile fonksiyon oluştur.",sw:"Nafasi haitoshi? Tengeneza vifaa kwa F1 na F2.",id:"Kurang ruang? Buat fungsi dengan F1 dan F2.",pl:"Brak miejsca? Stwórz funkcje z F1 i F2."},
+    width:8,height:8,start_position:[2,6],start_direction:"N",goals:[[4,3],[5,0],[5,6]],map:"00000200\n00000200\n00000200\n00234200\n00100200\n00000200\n00000200\n00000000"
+  },
+  {
+    name:{en:"LEVEL 7",es:"NIVEL 7",fr:"NIVEAU 7",de:"LEVEL 7",it:"LIVELLO 7",pt:"NÍVEL 7",ru:"УРОВЕНЬ 7",zh:"关卡 7",ja:"レベル 7",ko:"레벨 7",hi:"लेवल 7",bn:"লেভেল 7",vi:"MÀN 7",ar:"المستوى 7",th:"ด่าน 7",tl:"LEVEL 7",no:"NIVÅ 7",nl:"LEVEL 7",sv:"BANA 7",tr:"SEVİYE 7",sw:"NGAZI 7",id:"LEVEL 7",pl:"POZIOM 7"},
+    description:{en:"Re-using functions is great for repetitive tasks!",es:"¡Reutilizar funciones es ideal para tareas repetitivas!",fr:"Réutiliser des fonctions est parfait pour les tâches répétitives !",de:"Funktionen wiederzuverwenden ist super für wiederholte Aufgaben!",it:"Riutilizzare le funzioni è ottimo per i compiti ripetitivi!",pt:"Reutilizar funções é ótimo para tarefas repetitivas!",ru:"Повторное использование функций помогает с повторяющимися задачами!",zh:"重复使用函数是处理重复任务的好办法！",ja:"関数の再利用は繰り返し作業に最適！",ko:"함수를 재사용하면 반복 작업에 좋아요!",hi:"फ़ंक्शन का दोबारा उपयोग बार-बार के काम के लिए बढ़िया है!",bn:"ফাংশন আবার ব্যবহার করা পুনরাবৃত্তি কাজে দারুণ!",vi:"Tái dùng hàm rất hợp cho công việc lặp đi lặp lại!",ar:"إعادة استخدام الدوال مثالية للمهام المتكررة!",th:"การใช้ฟังก์ชันซ้ำเหมาะกับงานซ้ำ ๆ มาก!",tl:"Magaling magamit ulit ang functions para sa paulit-ulit na gawain!",no:"Å gjenbruke funksjoner er flott for gjentakende oppgaver!",nl:"Functies hergebruiken is geweldig voor herhalend werk!",sv:"Att återanvända funktioner passar perfekt för repetitiva uppgifter!",tr:"Fonksiyonları tekrar kullanmak tekrarlı işler için harikadır!",sw:"Kutumia vifaa upya ni vyema kwa kazi za kurudia!",id:"Memakai ulang fungsi sangat berguna untuk tugas berulang!",pl:"Wielokrotne użycie funkcji świetnie sprawdza się przy powtarzalnych zadaniach!"},
+    width:8,height:8,start_position:[0,3],start_direction:"E",goals:[[1,3],[1,4],[2,3],[2,4],[3,3],[3,4],[4,3],[4,4],[5,3],[5,4],[6,3],[6,4],[7,3],[7,4]],map:"00000000\n00000000\n00000000\n00000000\n00000000\n00000000\n00000000\n00000000"
+  },
+  {
+    name:{en:"LEVEL 8",es:"NIVEL 8",fr:"NIVEAU 8",de:"LEVEL 8",it:"LIVELLO 8",pt:"NÍVEL 8",ru:"УРОВЕНЬ 8",zh:"关卡 8",ja:"レベル 8",ko:"레벨 8",hi:"लेवल 8",bn:"লেভেল 8",vi:"MÀN 8",ar:"المستوى 8",th:"ด่าน 8",tl:"LEVEL 8",no:"NIVÅ 8",nl:"LEVEL 8",sv:"BANA 8",tr:"SEVİYE 8",sw:"NGAZI 8",id:"LEVEL 8",pl:"POZIOM 8"},
+    description:{en:"Functions are fun!",es:"¡Las funciones son divertidas!",fr:"Les fonctions sont amusantes !",de:"Funktionen machen Spaß!",it:"Le funzioni sono divertenti!",pt:"Funções são divertidas!",ru:"Функции — это весело!",zh:"函数真好玩！",ja:"関数は楽しい！",ko:"함수는 재미있어요!",hi:"फ़ंक्शन मज़ेदार हैं!",bn:"ফাংশন মজার!",vi:"Hàm thật vui!",ar:"الدوال ممتعة!",th:"ฟังก์ชันสนุก!",tl:"Masaya ang functions!",no:"Funksjoner er gøy!",nl:"Functies zijn leuk!",sv:"Funktioner är kul!",tr:"Fonksiyonlar eğlencelidir!",sw:"Vifaa ni vya kufurahisha!",id:"Fungsi itu seru!",pl:"Funkcje są fajne!"},
+    width:8,height:8,start_position:[2,5],start_direction:"N",goals:[[2,1],[2,3],[4,1],[4,3],[4,5],[6,1],[6,3],[6,5]],map:"00000000\n00111110\n00101010\n00111110\n00101010\n00001110\n00000000\n00000000"
+  },
+  {
+    name:{en:"LEVEL 9",es:"NIVEL 9",fr:"NIVEAU 9",de:"LEVEL 9",it:"LIVELLO 9",pt:"NÍVEL 9",ru:"УРОВЕНЬ 9",zh:"关卡 9",ja:"レベル 9",ko:"레벨 9",hi:"लेवल 9",bn:"লেভেল 9",vi:"MÀN 9",ar:"المستوى 9",th:"ด่าน 9",tl:"LEVEL 9",no:"NIVÅ 9",nl:"LEVEL 9",sv:"BANA 9",tr:"SEVİYE 9",sw:"NGAZI 9",id:"LEVEL 9",pl:"POZIOM 9"},
+    description:{en:"Now you're thinking like a programmer.",es:"Ahora piensas como programador.",fr:"Maintenant tu penses comme un programmeur.",de:"Jetzt denkst du wie ein Programmierer.",it:"Ora ragioni come un programmatore.",pt:"Agora você pensa como um programador.",ru:"Теперь ты думаешь как программист.",zh:"现在你像程序员一样思考了。",ja:"プログラマーらしい思考になってきた。",ko:"이제 프로그래머처럼 생각하는군요.",hi:"अब आप प्रोग्रामर की तरह सोच रहे हैं।",bn:"এখন তুমি প্রোগ্রামারের মতো ভাবছ।",vi:"Giờ bạn nghĩ như một lập trình viên.",ar:"أنت الآن تفكر كمبرمج.",th:"ตอนนี้คุณคิดแบบโปรแกรมเมอร์แล้ว",tl:"Mag-iisip ka na parang programmer!",no:"Nå tenker du som en programmerer.",nl:"Nu denk je als een programmeur.",sv:"Nu tänker du som en programmerare.",tr:"Artık bir programcı gibi düşünüyorsun.",sw:"Sasa unafikiri kama mtaalamu wa programu.",id:"Sekarang kamu berpikir seperti programmer.",pl:"Teraz myślisz jak programista."},
+    width:8,height:8,start_position:[1,5],start_direction:"E",goals:[[2,1],[2,2],[2,3],[2,4],[3,1],[3,4],[4,1],[4,4],[5,1],[5,2],[5,3],[5,4]],map:"00100100\n01211210\n00100100\n00100100\n01211210\n00100100\n00000000\n00000000"
+  },
+  {
+    name:{en:"LEVEL 10",es:"NIVEL 10",fr:"NIVEAU 10",de:"LEVEL 10",it:"LIVELLO 10",pt:"NÍVEL 10",ru:"УРОВЕНЬ 10",zh:"关卡 10",ja:"レベル 10",ko:"레벨 10",hi:"लेवल 10",bn:"লেভেল 10",vi:"MÀN 10",ar:"المستوى 10",th:"ด่าน 10",tl:"LEVEL 10",no:"NIVÅ 10",nl:"LEVEL 10",sv:"BANA 10",tr:"SEVİYE 10",sw:"NGAZI 10",id:"LEVEL 10",pl:"POZIOM 10"},
+    description:{en:"Do you feel your mind getting numb yet?",es:"¿Sientes que se te aturde la mente?",fr:"Le cerveau commence à fatiguer ?",de:"Wird dir schon schwindlig im Kopf?",it:"Senti la testa che gira già?",pt:"Sentindo a mente cansando?",ru:"Уже голова идёт кругом?",zh:"感觉脑袋有点发懵了？",ja:"頭がしびれてきた？",ko:"머리가 멍해지지 않나요?",hi:"क्या दिमाग सुन्न होने लगा है?",bn:"মাথা ঝিমঝিম করছে?",vi:"Cảm thấy đầu óc tê dại chưa?",ar:"هل بدأ عقلك يصاب بالخدر؟",th:"เริ่มมึนหัวหรือยัง?",tl:"Nahihilo ka na ba?",no:"Begynner hjernen å bli nummen?",nl:"Word je hoofd al moe?",sv:"Börjar huvudet bli trött?",tr:"Kafan uyuşmaya başladı mı?",sw:"Akili yako inaanza kuchoka?",id:"Sudah pusing belum?",pl:"Czujesz, że mózg się męczy?"},
+    width:8,height:8,start_position:[0,6],start_direction:"E",goals:[[0,5],[7,4]],map:"00000000\n00000000\n00000000\n00000000\n00043422\n22242320\n00001000\n00000000"
+  },
+  {
+    name:{en:"LEVEL 11",es:"NIVEL 11",fr:"NIVEAU 11",de:"LEVEL 11",it:"LIVELLO 11",pt:"NÍVEL 11",ru:"УРОВЕНЬ 11",zh:"关卡 11",ja:"レベル 11",ko:"레벨 11",hi:"लेवल 11",bn:"লেভেল 11",vi:"MÀN 11",ar:"المستوى 11",th:"ด่าน 11",tl:"LEVEL 11",no:"NIVÅ 11",nl:"LEVEL 11",sv:"BANA 11",tr:"SEVİYE 11",sw:"NGAZI 11",id:"LEVEL 11",pl:"POZIOM 11"},
+    description:{en:"Second-to-last level. Are you up to it?",es:"Penúltimo nivel. ¿Te animas?",fr:"Avant-dernier niveau. À toi de jouer !",de:"Vorletztes Level. Schaffst du das?",it:"Penultimo livello. Te la senti?",pt:"Penúltimo nível. Topa o desafio?",ru:"Предпоследний уровень. Справишься?",zh:"倒数第二关。能行吗？",ja:"残り 2 つ目のレベル。挑戦できる？",ko:"끝에서 두 번째 레벨. 해낼 수 있나요?",hi:"उपांत्य लेवल। तैयार हैं?",bn:"শেষের আগের লেভেল। পারবে?",vi:"Màn áp chót. Bạn sẵn sàng chưa?",ar:"المستوى قبل الأخير. هل أنت مستعد؟",th:"ด่านรองสุดท้าย ไหวไหม?",tl:"Pangalawa sa huli. Kaya mo ba?",no:"Nest siste nivå. Klarer du det?",nl:"Voorlaatste level. Lukt het je?",sv:"Näst sista banan. Klarar du den?",tr:"Sondan bir önceki seviye. Hazır mısın?",sw:"Ngazi ya pili kutoka mwisho. Una uwezo?",id:"Level kedua dari terakhir. Siap?",pl:"Przedostatni poziom. Dasz radę?"},
+    width:8,height:8,start_position:[0,7],start_direction:"E",goals:[[0,2],[0,3],[0,4],[0,5],[0,6],[1,2],[1,3],[1,4],[1,5],[1,6],[1,7],[2,2],[2,3],[2,4],[2,5],[2,6],[2,7],[3,2],[3,3],[3,4],[3,5],[3,6],[3,7],[4,2],[4,3],[4,4],[4,5],[4,6],[4,7],[5,2],[5,3],[5,4],[5,5],[5,6],[5,7],[6,2],[6,3],[6,4],[6,5],[6,6],[6,7],[7,2],[7,3],[7,4],[7,5],[7,6],[7,7]],map:"33333333\n22222222\n11111111\n00000000\n11111111\n00000000\n11111111\n00000000"
+  },
+  {
+    name:{en:"LEVEL 12",es:"NIVEL 12",fr:"NIVEAU 12",de:"LEVEL 12",it:"LIVELLO 12",pt:"NÍVEL 12",ru:"УРОВЕНЬ 12",zh:"关卡 12",ja:"レベル 12",ko:"레벨 12",hi:"लेवल 12",bn:"লেভেল 12",vi:"MÀN 12",ar:"المستوى 12",th:"ด่าน 12",tl:"LEVEL 12",no:"NIVÅ 12",nl:"LEVEL 12",sv:"BANA 12",tr:"SEVİYE 12",sw:"NGAZI 12",id:"LEVEL 12",pl:"POZIOM 12"},
+    description:{en:"The final level. Don't get dizzy!",es:"Último nivel. ¡No te marees!",fr:"Le dernier niveau. Ne t'étourdis pas !",de:"Das letzte Level. Werd nicht schwindlig!",it:"Livello finale. Non farti girare la testa!",pt:"Nível final. Não fique tonto!",ru:"Финальный уровень. Не закружись!",zh:"最后一关。别晕了！",ja:"最後のレベル。目を回すなよ！",ko:"마지막 레벨. 어지러워하지 마세요!",hi:"अंतिम लेवल। चक्कर मत खाइए!",bn:"শেষ লেভেল। মাথা ঘুরিও না!",vi:"Màn cuối. Đừng chóng mặt!",ar:"المستوى الأخير. لا تُصب بالدوار!",th:"ด่านสุดท้าย อย่าเวียนหัวล่ะ!",tl:"Huling level. Huwag mahilo!",no:"Siste nivå. Ikke bli svimmel!",nl:"Het laatste level. Word niet duizelig!",sv:"Sista banan. Bli inte yr!",tr:"Son seviye. Başın dönmesin!",sw:"Ngazi ya mwisho. Usizungushwe kichwa!",id:"Level terakhir. Jangan pusing ya!",pl:"Ostatni poziom. Nie zakręć się w głowie!"},
+    width:8,height:8,start_position:[4,7],start_direction:"N",goals:[[1,2],[1,3],[1,4],[1,5],[2,2],[2,5],[3,2],[3,5],[4,2],[4,3],[4,4],[4,5],[5,2],[5,5],[6,2],[6,5],[7,2],[7,3],[7,4],[7,5]],map:"00000000\n00000000\n01234321\n02003002\n03002003\n04321234\n00000000\n00000000"
+  }
 ];
 
 // Working copy of levels (editor mutates this).
@@ -866,7 +918,7 @@ const TRANSLATIONS = {
     back_levels:"← Levels", level_n_of_total:"{n} / {total}",
     instructions_drag:"Instructions (drag to memory)", speed:"Speed",
     reset:"Reset", run:"Run", stop:"Stop", instructions_count:"Instructions: {n}",
-    main_label:"Main", f1_label:"F1", f2_label:"F2",
+    main_label:"Main Memory", f1_label:"F1 Memory", f2_label:"F2 Memory",
     tt_forward:"Forward", tt_left:"Turn Left", tt_right:"Turn Right",
     tt_jump:"Jump", tt_light:"Light", tt_f1:"Call F1", tt_f2:"Call F2",
     level_complete:"Level Complete!", level_complete_msg:"Nice programming.",
@@ -894,7 +946,7 @@ const TRANSLATIONS = {
     back_levels:"← Niveles", level_n_of_total:"{n} / {total}",
     instructions_drag:"Instrucciones (arrastra a memoria)", speed:"Velocidad",
     reset:"Reiniciar", run:"Ejecutar", stop:"Detener", instructions_count:"Instrucciones: {n}",
-    main_label:"Principal", f1_label:"F1", f2_label:"F2",
+    main_label:"Memoria principal", f1_label:"Memoria F1", f2_label:"Memoria F2",
     tt_forward:"Avanzar", tt_left:"Girar a la izquierda", tt_right:"Girar a la derecha",
     tt_jump:"Saltar", tt_light:"Iluminar", tt_f1:"Llamar F1", tt_f2:"Llamar F2",
     level_complete:"¡Nivel completado!", level_complete_msg:"Buen trabajo.",
@@ -921,7 +973,7 @@ const TRANSLATIONS = {
     back_levels:"← Niveaux", level_n_of_total:"{n} / {total}",
     instructions_drag:"Instructions (glissez vers la mémoire)", speed:"Vitesse",
     reset:"Réinit.", run:"Lancer", stop:"Arrêter", instructions_count:"Instructions : {n}",
-    main_label:"Principal", f1_label:"F1", f2_label:"F2",
+    main_label:"Mémoire principale", f1_label:"Mémoire F1", f2_label:"Mémoire F2",
     tt_forward:"Avancer", tt_left:"Tourner à gauche", tt_right:"Tourner à droite",
     tt_jump:"Sauter", tt_light:"Allumer", tt_f1:"Appeler F1", tt_f2:"Appeler F2",
     level_complete:"Niveau terminé !", level_complete_msg:"Bien programmé.",
@@ -948,7 +1000,7 @@ const TRANSLATIONS = {
     back_levels:"← Level", level_n_of_total:"{n} / {total}",
     instructions_drag:"Befehle (in den Speicher ziehen)", speed:"Geschwindigkeit",
     reset:"Zurücksetzen", run:"Start", stop:"Stopp", instructions_count:"Befehle: {n}",
-    main_label:"Haupt", f1_label:"F1", f2_label:"F2",
+    main_label:"Hauptspeicher", f1_label:"F1-Speicher", f2_label:"F2-Speicher",
     tt_forward:"Vorwärts", tt_left:"Links drehen", tt_right:"Rechts drehen",
     tt_jump:"Springen", tt_light:"Leuchten", tt_f1:"F1 aufrufen", tt_f2:"F2 aufrufen",
     level_complete:"Level geschafft!", level_complete_msg:"Gut programmiert.",
@@ -975,7 +1027,7 @@ const TRANSLATIONS = {
     back_levels:"← Livelli", level_n_of_total:"{n} / {total}",
     instructions_drag:"Istruzioni (trascina in memoria)", speed:"Velocità",
     reset:"Reset", run:"Avvia", stop:"Ferma", instructions_count:"Istruzioni: {n}",
-    main_label:"Principale", f1_label:"F1", f2_label:"F2",
+    main_label:"Memoria principale", f1_label:"Memoria F1", f2_label:"Memoria F2",
     tt_forward:"Avanti", tt_left:"Gira a sinistra", tt_right:"Gira a destra",
     tt_jump:"Salta", tt_light:"Illumina", tt_f1:"Chiama F1", tt_f2:"Chiama F2",
     level_complete:"Livello completato!", level_complete_msg:"Bella programmazione.",
@@ -1002,7 +1054,7 @@ const TRANSLATIONS = {
     back_levels:"← Níveis", level_n_of_total:"{n} / {total}",
     instructions_drag:"Instruções (arraste para a memória)", speed:"Velocidade",
     reset:"Reiniciar", run:"Executar", stop:"Parar", instructions_count:"Instruções: {n}",
-    main_label:"Principal", f1_label:"F1", f2_label:"F2",
+    main_label:"Memória principal", f1_label:"Memória F1", f2_label:"Memória F2",
     tt_forward:"Avançar", tt_left:"Virar à esquerda", tt_right:"Virar à direita",
     tt_jump:"Pular", tt_light:"Iluminar", tt_f1:"Chamar F1", tt_f2:"Chamar F2",
     level_complete:"Nível concluído!", level_complete_msg:"Boa programação.",
@@ -1029,7 +1081,7 @@ const TRANSLATIONS = {
     back_levels:"← Уровни", level_n_of_total:"{n} / {total}",
     instructions_drag:"Команды (перетащи в память)", speed:"Скорость",
     reset:"Сброс", run:"Старт", stop:"Стоп", instructions_count:"Команды: {n}",
-    main_label:"Основная", f1_label:"F1", f2_label:"F2",
+    main_label:"Основная память", f1_label:"Память F1", f2_label:"Память F2",
     tt_forward:"Вперёд", tt_left:"Налево", tt_right:"Направо",
     tt_jump:"Прыжок", tt_light:"Зажечь", tt_f1:"Вызвать F1", tt_f2:"Вызвать F2",
     level_complete:"Уровень пройден!", level_complete_msg:"Хорошая программа.",
@@ -1056,7 +1108,7 @@ const TRANSLATIONS = {
     back_levels:"← 关卡", level_n_of_total:"{n} / {total}",
     instructions_drag:"指令（拖到内存）", speed:"速度",
     reset:"重置", run:"运行", stop:"停止", instructions_count:"指令数：{n}",
-    main_label:"主程序", f1_label:"F1", f2_label:"F2",
+    main_label:"主内存", f1_label:"F1 内存", f2_label:"F2 内存",
     tt_forward:"前进", tt_left:"左转", tt_right:"右转",
     tt_jump:"跳跃", tt_light:"点亮", tt_f1:"调用 F1", tt_f2:"调用 F2",
     level_complete:"关卡完成！", level_complete_msg:"编程不错。",
@@ -1083,7 +1135,7 @@ const TRANSLATIONS = {
     back_levels:"← レベル", level_n_of_total:"{n} / {total}",
     instructions_drag:"命令（メモリにドラッグ）", speed:"速度",
     reset:"リセット", run:"実行", stop:"停止", instructions_count:"命令数: {n}",
-    main_label:"メイン", f1_label:"F1", f2_label:"F2",
+    main_label:"メインメモリ", f1_label:"F1 メモリ", f2_label:"F2 メモリ",
     tt_forward:"前進", tt_left:"左折", tt_right:"右折",
     tt_jump:"ジャンプ", tt_light:"点灯", tt_f1:"F1 を呼ぶ", tt_f2:"F2 を呼ぶ",
     level_complete:"クリア！", level_complete_msg:"いいプログラム。",
@@ -1110,7 +1162,7 @@ const TRANSLATIONS = {
     back_levels:"← 레벨", level_n_of_total:"{n} / {total}",
     instructions_drag:"명령 (메모리로 드래그)", speed:"속도",
     reset:"리셋", run:"실행", stop:"정지", instructions_count:"명령 수: {n}",
-    main_label:"메인", f1_label:"F1", f2_label:"F2",
+    main_label:"메인 메모리", f1_label:"F1 메모리", f2_label:"F2 메모리",
     tt_forward:"전진", tt_left:"왼쪽 회전", tt_right:"오른쪽 회전",
     tt_jump:"점프", tt_light:"점등", tt_f1:"F1 호출", tt_f2:"F2 호출",
     level_complete:"레벨 완료!", level_complete_msg:"좋은 프로그래밍.",
@@ -1137,7 +1189,7 @@ const TRANSLATIONS = {
     back_levels:"← लेवल", level_n_of_total:"{n} / {total}",
     instructions_drag:"निर्देश (मेमोरी में खींचें)", speed:"गति",
     reset:"रीसेट", run:"चलाएं", stop:"रोकें", instructions_count:"निर्देश: {n}",
-    main_label:"मुख्य", f1_label:"F1", f2_label:"F2",
+    main_label:"मुख्य मेमोरी", f1_label:"F1 मेमोरी", f2_label:"F2 मेमोरी",
     tt_forward:"आगे", tt_left:"बाएं मुड़ें", tt_right:"दाएं मुड़ें",
     tt_jump:"कूदें", tt_light:"रोशन करें", tt_f1:"F1 बुलाएं", tt_f2:"F2 बुलाएं",
     level_complete:"लेवल पूरा!", level_complete_msg:"अच्छी प्रोग्रामिंग।",
@@ -1164,7 +1216,7 @@ const TRANSLATIONS = {
     back_levels:"← লেভেল", level_n_of_total:"{n} / {total}",
     instructions_drag:"নির্দেশ (মেমোরিতে টানো)", speed:"গতি",
     reset:"রিসেট", run:"চালাও", stop:"থামাও", instructions_count:"নির্দেশ: {n}",
-    main_label:"প্রধান", f1_label:"F1", f2_label:"F2",
+    main_label:"প্রধান মেমোরি", f1_label:"F1 মেমোরি", f2_label:"F2 মেমোরি",
     tt_forward:"সামনে", tt_left:"বাঁয়ে ঘোরাও", tt_right:"ডানে ঘোরাও",
     tt_jump:"লাফাও", tt_light:"আলো জ্বালাও", tt_f1:"F1 ডাকো", tt_f2:"F2 ডাকো",
     level_complete:"লেভেল শেষ!", level_complete_msg:"ভালো প্রোগ্রাম।",
@@ -1191,7 +1243,7 @@ const TRANSLATIONS = {
     back_levels:"← Màn", level_n_of_total:"{n} / {total}",
     instructions_drag:"Lệnh (kéo vào bộ nhớ)", speed:"Tốc độ",
     reset:"Đặt lại", run:"Chạy", stop:"Dừng", instructions_count:"Lệnh: {n}",
-    main_label:"Chính", f1_label:"F1", f2_label:"F2",
+    main_label:"Bộ nhớ chính", f1_label:"Bộ nhớ F1", f2_label:"Bộ nhớ F2",
     tt_forward:"Tiến", tt_left:"Quay trái", tt_right:"Quay phải",
     tt_jump:"Nhảy", tt_light:"Thắp sáng", tt_f1:"Gọi F1", tt_f2:"Gọi F2",
     level_complete:"Hoàn thành màn!", level_complete_msg:"Lập trình tốt.",
@@ -1218,7 +1270,7 @@ const TRANSLATIONS = {
     back_levels:"← المستويات", level_n_of_total:"{n} / {total}",
     instructions_drag:"تعليمات (اسحب إلى الذاكرة)", speed:"السرعة",
     reset:"إعادة", run:"تشغيل", stop:"إيقاف", instructions_count:"التعليمات: {n}",
-    main_label:"الرئيسي", f1_label:"F1", f2_label:"F2",
+    main_label:"الذاكرة الرئيسية", f1_label:"ذاكرة F1", f2_label:"ذاكرة F2",
     tt_forward:"تقدم", tt_left:"استدر يسارًا", tt_right:"استدر يمينًا",
     tt_jump:"قفز", tt_light:"أضِئ", tt_f1:"استدعِ F1", tt_f2:"استدعِ F2",
     level_complete:"اكتمل المستوى!", level_complete_msg:"برمجة جيدة.",
@@ -1245,7 +1297,7 @@ const TRANSLATIONS = {
     back_levels:"← ด่าน", level_n_of_total:"{n} / {total}",
     instructions_drag:"คำสั่ง (ลากไปที่หน่วยความจำ)", speed:"ความเร็ว",
     reset:"รีเซ็ต", run:"เริ่ม", stop:"หยุด", instructions_count:"คำสั่ง: {n}",
-    main_label:"หลัก", f1_label:"F1", f2_label:"F2",
+    main_label:"หน่วยความจำหลัก", f1_label:"หน่วยความจำ F1", f2_label:"หน่วยความจำ F2",
     tt_forward:"เดินหน้า", tt_left:"เลี้ยวซ้าย", tt_right:"เลี้ยวขวา",
     tt_jump:"กระโดด", tt_light:"จุดไฟ", tt_f1:"เรียก F1", tt_f2:"เรียก F2",
     level_complete:"ผ่านด่าน!", level_complete_msg:"เขียนโปรแกรมเก่ง",
@@ -1272,7 +1324,7 @@ const TRANSLATIONS = {
     back_levels:"← Mga Level", level_n_of_total:"{n} / {total}",
     instructions_drag:"Mga utos (i-drag sa memorya)", speed:"Bilis",
     reset:"I-reset", run:"Patakbuhin", stop:"Itigil", instructions_count:"Mga utos: {n}",
-    main_label:"Pangunahin", f1_label:"F1", f2_label:"F2",
+    main_label:"Pangunahing Memorya", f1_label:"Memorya ng F1", f2_label:"Memorya ng F2",
     tt_forward:"Sulong", tt_left:"Liko pakaliwa", tt_right:"Liko pakanan",
     tt_jump:"Talon", tt_light:"Pailawan", tt_f1:"Tawagin ang F1", tt_f2:"Tawagin ang F2",
     level_complete:"Tapos na ang level!", level_complete_msg:"Magaling magprograma.",
@@ -1299,7 +1351,7 @@ const TRANSLATIONS = {
     back_levels:"← Nivåer", level_n_of_total:"{n} / {total}",
     instructions_drag:"Instruksjoner (dra til minne)", speed:"Hastighet",
     reset:"Tilbakestill", run:"Kjør", stop:"Stopp", instructions_count:"Instruksjoner: {n}",
-    main_label:"Hoved", f1_label:"F1", f2_label:"F2",
+    main_label:"Hovedminne", f1_label:"F1-minne", f2_label:"F2-minne",
     tt_forward:"Fremover", tt_left:"Snu venstre", tt_right:"Snu høyre",
     tt_jump:"Hopp", tt_light:"Lys", tt_f1:"Kall F1", tt_f2:"Kall F2",
     level_complete:"Nivå fullført!", level_complete_msg:"Bra programmert.",
@@ -1326,7 +1378,7 @@ const TRANSLATIONS = {
     back_levels:"← Levels", level_n_of_total:"{n} / {total}",
     instructions_drag:"Instructies (sleep naar geheugen)", speed:"Snelheid",
     reset:"Reset", run:"Start", stop:"Stop", instructions_count:"Instructies: {n}",
-    main_label:"Hoofd", f1_label:"F1", f2_label:"F2",
+    main_label:"Hoofdgeheugen", f1_label:"F1-geheugen", f2_label:"F2-geheugen",
     tt_forward:"Vooruit", tt_left:"Linksom", tt_right:"Rechtsom",
     tt_jump:"Springen", tt_light:"Verlichten", tt_f1:"F1 aanroepen", tt_f2:"F2 aanroepen",
     level_complete:"Level voltooid!", level_complete_msg:"Goed geprogrammeerd.",
@@ -1353,7 +1405,7 @@ const TRANSLATIONS = {
     back_levels:"← Banor", level_n_of_total:"{n} / {total}",
     instructions_drag:"Instruktioner (dra till minne)", speed:"Hastighet",
     reset:"Återställ", run:"Kör", stop:"Stoppa", instructions_count:"Instruktioner: {n}",
-    main_label:"Huvud", f1_label:"F1", f2_label:"F2",
+    main_label:"Huvudminne", f1_label:"F1-minne", f2_label:"F2-minne",
     tt_forward:"Framåt", tt_left:"Sväng vänster", tt_right:"Sväng höger",
     tt_jump:"Hoppa", tt_light:"Lys", tt_f1:"Anropa F1", tt_f2:"Anropa F2",
     level_complete:"Banan klar!", level_complete_msg:"Bra programmerat.",
@@ -1380,7 +1432,7 @@ const TRANSLATIONS = {
     back_levels:"← Seviyeler", level_n_of_total:"{n} / {total}",
     instructions_drag:"Komutlar (belleğe sürükle)", speed:"Hız",
     reset:"Sıfırla", run:"Çalıştır", stop:"Durdur", instructions_count:"Komutlar: {n}",
-    main_label:"Ana", f1_label:"F1", f2_label:"F2",
+    main_label:"Ana Bellek", f1_label:"F1 Belleği", f2_label:"F2 Belleği",
     tt_forward:"İleri", tt_left:"Sola dön", tt_right:"Sağa dön",
     tt_jump:"Atla", tt_light:"Yak", tt_f1:"F1 çağır", tt_f2:"F2 çağır",
     level_complete:"Seviye tamamlandı!", level_complete_msg:"Güzel programlama.",
@@ -1407,7 +1459,7 @@ const TRANSLATIONS = {
     back_levels:"← Ngazi", level_n_of_total:"{n} / {total}",
     instructions_drag:"Maagizo (buruta hadi kumbukumbu)", speed:"Kasi",
     reset:"Anza upya", run:"Endesha", stop:"Simamisha", instructions_count:"Maagizo: {n}",
-    main_label:"Kuu", f1_label:"F1", f2_label:"F2",
+    main_label:"Kumbukumbu Kuu", f1_label:"Kumbukumbu ya F1", f2_label:"Kumbukumbu ya F2",
     tt_forward:"Mbele", tt_left:"Geuka kushoto", tt_right:"Geuka kulia",
     tt_jump:"Ruka", tt_light:"Washa", tt_f1:"Ita F1", tt_f2:"Ita F2",
     level_complete:"Ngazi imekamilika!", level_complete_msg:"Programu nzuri.",
@@ -1434,7 +1486,7 @@ const TRANSLATIONS = {
     back_levels:"← Level", level_n_of_total:"{n} / {total}",
     instructions_drag:"Perintah (seret ke memori)", speed:"Kecepatan",
     reset:"Atur ulang", run:"Jalankan", stop:"Hentikan", instructions_count:"Perintah: {n}",
-    main_label:"Utama", f1_label:"F1", f2_label:"F2",
+    main_label:"Memori Utama", f1_label:"Memori F1", f2_label:"Memori F2",
     tt_forward:"Maju", tt_left:"Belok kiri", tt_right:"Belok kanan",
     tt_jump:"Lompat", tt_light:"Nyalakan", tt_f1:"Panggil F1", tt_f2:"Panggil F2",
     level_complete:"Level selesai!", level_complete_msg:"Pemrograman bagus.",
@@ -1461,7 +1513,7 @@ const TRANSLATIONS = {
     back_levels:"← Poziomy", level_n_of_total:"{n} / {total}",
     instructions_drag:"Polecenia (przeciągnij do pamięci)", speed:"Prędkość",
     reset:"Reset", run:"Start", stop:"Stop", instructions_count:"Polecenia: {n}",
-    main_label:"Główna", f1_label:"F1", f2_label:"F2",
+    main_label:"Pamięć główna", f1_label:"Pamięć F1", f2_label:"Pamięć F2",
     tt_forward:"Naprzód", tt_left:"Skręć w lewo", tt_right:"Skręć w prawo",
     tt_jump:"Skocz", tt_light:"Zaświeć", tt_f1:"Wywołaj F1", tt_f2:"Wywołaj F2",
     level_complete:"Poziom ukończony!", level_complete_msg:"Dobre programowanie.",
@@ -1501,6 +1553,27 @@ function t(key, params) {
   return s;
 }
 
+// Localized text fields (level name/description, hat name, etc.) can be a
+// per-language object {en:"...", es:"...", ...} or a plain string (legacy).
+// Resolve to the current lang, falling back to English, then to any first
+// available value.
+function localizedStr(field) {
+  if (typeof field === 'string') return field;
+  if (!field) return '';
+  if (field[currentLang] != null) return field[currentLang];
+  if (field.en != null) return field.en;
+  for (const k in field) return field[k];
+  return '';
+}
+// Write to only the current language's slot, preserving all other slots.
+function setLocalizedStr(level, key, value) {
+  const cur = level[key];
+  if (cur == null || typeof cur === 'string') {
+    level[key] = (typeof cur === 'string' && cur) ? { en: cur } : {};
+  }
+  level[key][currentLang] = value;
+}
+
 function applyLang() {
   document.documentElement.lang = currentLang;
   document.documentElement.dir = (currentLang === 'ar') ? 'rtl' : 'ltr';
@@ -1519,6 +1592,23 @@ function applyLang() {
   if (typeof updateInstrCounter === 'function') updateInstrCounter();
   if (typeof updateRunButton === 'function') updateRunButton();
   if (typeof updateLevelCounter === 'function') updateLevelCounter();
+  // Refresh localized level names/descriptions on the visible screens.
+  if (typeof gameState !== 'undefined' && gameState.level) {
+    const nm = document.getElementById('level-name');
+    const ds = document.getElementById('level-desc');
+    if (nm) nm.textContent = localizedStr(gameState.level.name);
+    if (ds) ds.textContent = localizedStr(gameState.level.desc);
+  }
+  if (typeof editorState !== 'undefined' && editorState.level) {
+    const en = document.getElementById('ed-name');
+    const ed = document.getElementById('ed-desc');
+    if (en) en.value = localizedStr(editorState.level.name);
+    if (ed) ed.value = localizedStr(editorState.level.desc);
+  }
+  if (typeof renderLevelGrid === 'function' && document.getElementById('start-screen') &&
+      !document.getElementById('start-screen').classList.contains('hidden')) {
+    renderLevelGrid();
+  }
 }
 
 function setLanguage(code) {
@@ -2126,8 +2216,8 @@ function resetLevel(keepPrograms = true) {
   renderMemory();
   updateRunButton();
   updateInstrCounter();
-  document.getElementById('level-name').textContent = gameState.level.name;
-  document.getElementById('level-desc').textContent = gameState.level.desc;
+  document.getElementById('level-name').textContent = localizedStr(gameState.level.name);
+  document.getElementById('level-desc').textContent = localizedStr(gameState.level.desc);
   updateLevelCounter();
 }
 function updateLevelCounter() {
@@ -2643,7 +2733,7 @@ function setupCanvasInput(canvas, isEditor) {
   canvas.addEventListener('wheel', (e) => {
     e.preventDefault();
     const cam = isEditor ? editorState.cam : gameState.cam;
-    const factor = e.deltaY < 0 ? 1.12 : 1 / 1.12;
+    const factor = e.deltaY < 0 ? 1.05 : 1 / 1.05;
     cam.targetZoom = clamp(cam.targetZoom * factor, 0.3, 4);
   }, { passive: false });
 
@@ -2657,8 +2747,8 @@ function loadEditorLevel(idx) {
   editorState.levelIdx = idx;
   editorState.level = expandLevel(LEVELS[idx]);
   centerCamera(editorState.cam, editorState.level);
-  document.getElementById('ed-name').value = editorState.level.name;
-  document.getElementById('ed-desc').value = editorState.level.desc;
+  document.getElementById('ed-name').value = localizedStr(editorState.level.name);
+  document.getElementById('ed-desc').value = localizedStr(editorState.level.desc);
   document.getElementById('ed-width').value = editorState.level.width;
   document.getElementById('ed-height').value = editorState.level.height;
   renderLevelsList();
@@ -2673,7 +2763,7 @@ function renderLevelsList() {
   LEVELS.forEach((L, i) => {
     const item = document.createElement('div');
     item.className = 'item' + (i === editorState.levelIdx ? ' active' : '');
-    item.textContent = L.name;
+    item.textContent = localizedStr(L.name);
     item.addEventListener('click', () => {
       persistEditorLevel();
       loadEditorLevel(i);
@@ -2825,10 +2915,10 @@ function renderLevelGrid() {
     canvas.height = 240;
     const name = document.createElement('div');
     name.className = 'name';
-    name.textContent = L.name;
+    name.textContent = localizedStr(L.name);
     const desc = document.createElement('div');
     desc.className = 'desc';
-    desc.textContent = L.description || '';
+    desc.textContent = localizedStr(L.description);
     card.appendChild(canvas);
     card.appendChild(name);
     card.appendChild(desc);
@@ -3278,8 +3368,8 @@ function init() {
   document.getElementById('halt-ok').addEventListener('click', hideHaltOverlay);
 
   // Editor wiring
-  document.getElementById('ed-name').addEventListener('input', (e) => { editorState.level.name = e.target.value; persistEditorLevel(); renderLevelsList(); });
-  document.getElementById('ed-desc').addEventListener('input', (e) => { editorState.level.desc = e.target.value; persistEditorLevel(); });
+  document.getElementById('ed-name').addEventListener('input', (e) => { setLocalizedStr(editorState.level, 'name', e.target.value); persistEditorLevel(); renderLevelsList(); });
+  document.getElementById('ed-desc').addEventListener('input', (e) => { setLocalizedStr(editorState.level, 'desc', e.target.value); persistEditorLevel(); });
   document.getElementById('apply-size').addEventListener('click', () => {
     const w = clamp(parseInt(document.getElementById('ed-width').value, 10) || 8, 1, 32);
     const h = clamp(parseInt(document.getElementById('ed-height').value, 10) || 8, 1, 32);
@@ -3300,7 +3390,7 @@ function init() {
   });
   document.getElementById('add-level').addEventListener('click', () => {
     const blank = {
-      name: 'New Level', description: '',
+      name: { en: 'New Level' }, description: { en: '' },
       width: 8, height: 8, start_position: [0, 0], start_direction: 'E',
       goals: [], map: Array(8).fill('00000000').join('\n')
     };
@@ -3311,7 +3401,11 @@ function init() {
   document.getElementById('dup-level').addEventListener('click', () => {
     persistEditorLevel();
     const copy = JSON.parse(JSON.stringify(LEVELS[editorState.levelIdx]));
-    copy.name = copy.name + ' (copy)';
+    if (typeof copy.name === 'string') {
+      copy.name = copy.name + ' (copy)';
+    } else if (copy.name && typeof copy.name === 'object') {
+      for (const k in copy.name) copy.name[k] = copy.name[k] + ' (copy)';
+    }
     LEVELS.splice(editorState.levelIdx + 1, 0, copy);
     editorState.levelIdx++;
     loadEditorLevel(editorState.levelIdx);
