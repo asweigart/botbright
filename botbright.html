@@ -108,6 +108,8 @@ html, body {
   max-width: 1200px;
   display: flex;
   justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 8px;
   margin-bottom: 16px;
 }
 #level-grid {
@@ -474,6 +476,18 @@ button.active {
   display: flex;
   gap: 8px;
 }
+.hats-colors-panel {
+  width: 100%;
+  max-width: 320px;
+}
+.hats-colors-title {
+  margin: 0 0 6px 0;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
 
 /* Collapsible sections */
 .collapse-section { margin: 0; }
@@ -527,6 +541,25 @@ button.active {
   padding: 4px 6px;
   font-family: inherit;
   font-size: 13px;
+}
+.color-pair {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.color-row input.color-hex {
+  width: 72px;
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 3px 6px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
+  text-transform: lowercase;
+}
+.color-row input.color-hex.invalid {
+  border-color: var(--danger);
 }
 
 /* Camera controls grid */
@@ -665,14 +698,14 @@ button.active {
       <summary>Colors</summary>
       <div class="memory-section">
         <div class="color-row">
-          <span>Preset</span>
+          <span>Theme</span>
           <select id="color-preset"></select>
         </div>
-        <div class="color-row"><span>Tiles</span><input type="color" id="color-tile"></div>
-        <div class="color-row"><span>Goal</span><input type="color" id="color-goal"></div>
-        <div class="color-row"><span>Lit Goal</span><input type="color" id="color-lit"></div>
-        <div class="color-row"><span>Background</span><input type="color" id="color-bg"></div>
-        <div class="color-row"><span>Robot</span><input type="color" id="color-bot"></div>
+        <div class="color-row"><span>Tiles</span><span class="color-pair"><input type="color" id="color-tile"><input type="text" class="color-hex" id="color-tile-hex" maxlength="7" spellcheck="false"></span></div>
+        <div class="color-row"><span>Goal</span><span class="color-pair"><input type="color" id="color-goal"><input type="text" class="color-hex" id="color-goal-hex" maxlength="7" spellcheck="false"></span></div>
+        <div class="color-row"><span>Lit Goal</span><span class="color-pair"><input type="color" id="color-lit"><input type="text" class="color-hex" id="color-lit-hex" maxlength="7" spellcheck="false"></span></div>
+        <div class="color-row"><span>Background</span><span class="color-pair"><input type="color" id="color-bg"><input type="text" class="color-hex" id="color-bg-hex" maxlength="7" spellcheck="false"></span></div>
+        <div class="color-row"><span>Robot</span><span class="color-pair"><input type="color" id="color-bot"><input type="text" class="color-hex" id="color-bot-hex" maxlength="7" spellcheck="false"></span></div>
       </div>
     </details>
   </div>
@@ -751,6 +784,18 @@ button.active {
       <button id="hats-import" data-i18n="import_json">Import JSON</button>
       <button id="hats-export" data-i18n="export_json">Export JSON</button>
       <input type="file" id="hats-import-file" accept="application/json,.json" style="display:none">
+    </div>
+    <div class="hats-colors-panel">
+      <h3 class="hats-colors-title">Colors</h3>
+      <div class="color-row">
+        <span>Theme</span>
+        <select id="hats-color-preset"></select>
+      </div>
+      <div class="color-row"><span>Tiles</span><span class="color-pair"><input type="color" id="hats-color-tile"><input type="text" class="color-hex" id="hats-color-tile-hex" maxlength="7" spellcheck="false"></span></div>
+      <div class="color-row"><span>Goal</span><span class="color-pair"><input type="color" id="hats-color-goal"><input type="text" class="color-hex" id="hats-color-goal-hex" maxlength="7" spellcheck="false"></span></div>
+      <div class="color-row"><span>Lit Goal</span><span class="color-pair"><input type="color" id="hats-color-lit"><input type="text" class="color-hex" id="hats-color-lit-hex" maxlength="7" spellcheck="false"></span></div>
+      <div class="color-row"><span>Background</span><span class="color-pair"><input type="color" id="hats-color-bg"><input type="text" class="color-hex" id="hats-color-bg-hex" maxlength="7" spellcheck="false"></span></div>
+      <div class="color-row"><span>Robot</span><span class="color-pair"><input type="color" id="hats-color-bot"><input type="text" class="color-hex" id="hats-color-bot-hex" maxlength="7" spellcheck="false"></span></div>
     </div>
   </div>
 </div>
@@ -867,6 +912,7 @@ const TRANSLATIONS = {
     reset_confirm:"¿Restaurar todos los niveles? Se perderán los cambios.",
     at_least_one:"Se requiere al menos un nivel.",
     import_ok:"Se importaron {n} nivel(es).", import_fail:"Error de importación: {msg}",
+    hats_button:"Editor de sombreros", choose_hat:"Elige un sombrero", back:"← Atrás",
     footer_generated_by:"Creado por",
     footer_offline:"Esta app funciona sin conexión. Guárdala como archivo .html."
   },
@@ -893,6 +939,7 @@ const TRANSLATIONS = {
     reset_confirm:"Réinitialiser tous les niveaux ? Vos modifications seront perdues.",
     at_least_one:"Au moins un niveau est requis.",
     import_ok:"{n} niveau(x) importé(s).", import_fail:"Échec de l'importation : {msg}",
+    hats_button:"Éditeur de chapeaux", choose_hat:"Choisis un chapeau", back:"← Retour",
     footer_generated_by:"Créé par",
     footer_offline:"Cette app fonctionne hors ligne. Enregistrez-la en .html."
   },
@@ -919,6 +966,7 @@ const TRANSLATIONS = {
     reset_confirm:"Alle Level zurücksetzen? Änderungen gehen verloren.",
     at_least_one:"Mindestens ein Level wird benötigt.",
     import_ok:"{n} Level importiert.", import_fail:"Import fehlgeschlagen: {msg}",
+    hats_button:"Hut-Editor", choose_hat:"Hut wählen", back:"← Zurück",
     footer_generated_by:"Erstellt von",
     footer_offline:"Diese App läuft offline. Als .html-Datei speichern."
   },
@@ -945,6 +993,7 @@ const TRANSLATIONS = {
     reset_confirm:"Ripristinare tutti i livelli? Le modifiche andranno perse.",
     at_least_one:"Serve almeno un livello.",
     import_ok:"Importati {n} livello/i.", import_fail:"Importazione fallita: {msg}",
+    hats_button:"Editor cappelli", choose_hat:"Scegli un cappello", back:"← Indietro",
     footer_generated_by:"Creato da",
     footer_offline:"Questa app funziona offline. Salvala come file .html."
   },
@@ -971,6 +1020,7 @@ const TRANSLATIONS = {
     reset_confirm:"Restaurar todos os níveis? Suas alterações serão perdidas.",
     at_least_one:"É necessário pelo menos um nível.",
     import_ok:"{n} nível(eis) importado(s).", import_fail:"Falha ao importar: {msg}",
+    hats_button:"Editor de chapéus", choose_hat:"Escolha um chapéu", back:"← Voltar",
     footer_generated_by:"Criado por",
     footer_offline:"Este app funciona offline. Salve como arquivo .html."
   },
@@ -997,6 +1047,7 @@ const TRANSLATIONS = {
     reset_confirm:"Сбросить все уровни? Изменения будут потеряны.",
     at_least_one:"Нужен хотя бы один уровень.",
     import_ok:"Импортировано уровней: {n}.", import_fail:"Ошибка импорта: {msg}",
+    hats_button:"Редактор шляп", choose_hat:"Выберите шляпу", back:"← Назад",
     footer_generated_by:"Создал",
     footer_offline:"Это приложение работает офлайн. Сохрани как .html файл."
   },
@@ -1023,6 +1074,7 @@ const TRANSLATIONS = {
     reset_confirm:"重置所有关卡？你的更改将丢失。",
     at_least_one:"至少需要一个关卡。",
     import_ok:"已导入 {n} 个关卡。", import_fail:"导入失败：{msg}",
+    hats_button:"帽子编辑器", choose_hat:"选择帽子", back:"← 返回",
     footer_generated_by:"作者：",
     footer_offline:"此应用可离线使用。保存为 .html 文件即可。"
   },
@@ -1049,6 +1101,7 @@ const TRANSLATIONS = {
     reset_confirm:"すべてのレベルを初期化しますか？変更は失われます。",
     at_least_one:"少なくとも 1 つのレベルが必要です。",
     import_ok:"{n} 個のレベルを読み込みました。", import_fail:"読み込み失敗: {msg}",
+    hats_button:"帽子エディタ", choose_hat:"帽子を選ぶ", back:"← 戻る",
     footer_generated_by:"作成",
     footer_offline:"このアプリはオフラインで動作します。.html ファイルとして保存してください。"
   },
@@ -1075,6 +1128,7 @@ const TRANSLATIONS = {
     reset_confirm:"모든 레벨을 초기화하시겠습니까? 변경사항이 사라집니다.",
     at_least_one:"최소 하나의 레벨이 필요합니다.",
     import_ok:"{n}개의 레벨을 가져왔습니다.", import_fail:"가져오기 실패: {msg}",
+    hats_button:"모자 편집기", choose_hat:"모자 선택", back:"← 뒤로",
     footer_generated_by:"제작",
     footer_offline:"이 앱은 오프라인에서 동작합니다. .html 파일로 저장하세요."
   },
@@ -1101,6 +1155,7 @@ const TRANSLATIONS = {
     reset_confirm:"सभी लेवल रीसेट करें? आपके बदलाव खो जाएंगे।",
     at_least_one:"कम से कम एक लेवल चाहिए।",
     import_ok:"{n} लेवल आयात किए।", import_fail:"आयात विफल: {msg}",
+    hats_button:"टोपी एडिटर", choose_hat:"टोपी चुनें", back:"← वापस",
     footer_generated_by:"द्वारा निर्मित",
     footer_offline:"यह ऐप ऑफलाइन काम करता है। .html फ़ाइल के रूप में सहेजें।"
   },
@@ -1127,6 +1182,7 @@ const TRANSLATIONS = {
     reset_confirm:"সব লেভেল রিসেট? পরিবর্তন হারিয়ে যাবে।",
     at_least_one:"অন্তত একটি লেভেল দরকার।",
     import_ok:"{n}টি লেভেল আমদানি হলো।", import_fail:"আমদানি ব্যর্থ: {msg}",
+    hats_button:"টুপি এডিটর", choose_hat:"টুপি বেছে নাও", back:"← ফিরে যাও",
     footer_generated_by:"তৈরি করেছেন",
     footer_offline:"এই অ্যাপ অফলাইনে চলে। .html ফাইল হিসেবে সংরক্ষণ করো।"
   },
@@ -1153,6 +1209,7 @@ const TRANSLATIONS = {
     reset_confirm:"Đặt lại tất cả màn? Mọi thay đổi sẽ mất.",
     at_least_one:"Cần ít nhất một màn.",
     import_ok:"Đã nhập {n} màn.", import_fail:"Nhập thất bại: {msg}",
+    hats_button:"Trình chỉnh sửa mũ", choose_hat:"Chọn mũ", back:"← Quay lại",
     footer_generated_by:"Tạo bởi",
     footer_offline:"Ứng dụng hoạt động ngoại tuyến. Lưu thành tệp .html."
   },
@@ -1179,6 +1236,7 @@ const TRANSLATIONS = {
     reset_confirm:"إعادة ضبط جميع المستويات؟ ستفقد التغييرات.",
     at_least_one:"يلزم مستوى واحد على الأقل.",
     import_ok:"تم استيراد {n} مستوى.", import_fail:"فشل الاستيراد: {msg}",
+    hats_button:"محرر القبعات", choose_hat:"اختر قبعة", back:"← رجوع",
     footer_generated_by:"صنع بواسطة",
     footer_offline:"يعمل هذا التطبيق دون اتصال. احفظه كملف .html."
   },
@@ -1205,6 +1263,7 @@ const TRANSLATIONS = {
     reset_confirm:"รีเซ็ตด่านทั้งหมด? การเปลี่ยนแปลงจะหายไป",
     at_least_one:"ต้องมีอย่างน้อยหนึ่งด่าน",
     import_ok:"นำเข้า {n} ด่านแล้ว", import_fail:"นำเข้าล้มเหลว: {msg}",
+    hats_button:"ตัวแก้ไขหมวก", choose_hat:"เลือกหมวก", back:"← ย้อนกลับ",
     footer_generated_by:"สร้างโดย",
     footer_offline:"แอปนี้ทำงานออฟไลน์ บันทึกเป็นไฟล์ .html"
   },
@@ -1231,6 +1290,7 @@ const TRANSLATIONS = {
     reset_confirm:"I-reset ang lahat ng level? Mawawala ang mga pagbabago.",
     at_least_one:"Kailangan ng isang level kahit paano.",
     import_ok:"Na-import ang {n} (na) level.", import_fail:"Bigo ang pag-import: {msg}",
+    hats_button:"Tagaedit ng Sumbrero", choose_hat:"Pumili ng Sumbrero", back:"← Bumalik",
     footer_generated_by:"Ginawa ni",
     footer_offline:"Gumagana ang app kahit offline. I-save bilang .html file."
   },
@@ -1257,6 +1317,7 @@ const TRANSLATIONS = {
     reset_confirm:"Tilbakestille alle nivåer? Endringene dine går tapt.",
     at_least_one:"Minst ett nivå kreves.",
     import_ok:"Importerte {n} nivå(er).", import_fail:"Import feilet: {msg}",
+    hats_button:"Lue-editor", choose_hat:"Velg en lue", back:"← Tilbake",
     footer_generated_by:"Laget av",
     footer_offline:"Denne appen fungerer offline. Lagre den som .html-fil."
   },
@@ -1283,6 +1344,7 @@ const TRANSLATIONS = {
     reset_confirm:"Alle levels resetten? Je wijzigingen gaan verloren.",
     at_least_one:"Er is minstens één level nodig.",
     import_ok:"{n} level(s) geïmporteerd.", import_fail:"Importeren mislukt: {msg}",
+    hats_button:"Hoeden-editor", choose_hat:"Kies een hoed", back:"← Terug",
     footer_generated_by:"Gemaakt door",
     footer_offline:"Deze app werkt offline. Sla op als .html-bestand."
   },
@@ -1309,6 +1371,7 @@ const TRANSLATIONS = {
     reset_confirm:"Återställ alla banor? Dina ändringar går förlorade.",
     at_least_one:"Minst en bana krävs.",
     import_ok:"{n} bana/banor importerade.", import_fail:"Import misslyckades: {msg}",
+    hats_button:"Hattredigerare", choose_hat:"Välj en hatt", back:"← Tillbaka",
     footer_generated_by:"Skapad av",
     footer_offline:"Appen fungerar offline. Spara som .html-fil."
   },
@@ -1335,6 +1398,7 @@ const TRANSLATIONS = {
     reset_confirm:"Tüm seviyeler sıfırlansın mı? Değişiklikler kaybolacak.",
     at_least_one:"En az bir seviye gerekli.",
     import_ok:"{n} seviye içe aktarıldı.", import_fail:"İçe aktarma başarısız: {msg}",
+    hats_button:"Şapka Düzenleyici", choose_hat:"Bir şapka seç", back:"← Geri",
     footer_generated_by:"Hazırlayan",
     footer_offline:"Bu uygulama çevrimdışı çalışır. .html dosyası olarak kaydedin."
   },
@@ -1361,6 +1425,7 @@ const TRANSLATIONS = {
     reset_confirm:"Anza upya ngazi zote? Mabadiliko yatapotea.",
     at_least_one:"Inahitajika angalau ngazi moja.",
     import_ok:"Imeleta ngazi {n}.", import_fail:"Imeshindwa kuleta: {msg}",
+    hats_button:"Mhariri wa Kofia", choose_hat:"Chagua kofia", back:"← Rudi",
     footer_generated_by:"Imetengenezwa na",
     footer_offline:"Programu hii hufanya kazi nje ya mtandao. Hifadhi kama faili ya .html."
   },
@@ -1387,6 +1452,7 @@ const TRANSLATIONS = {
     reset_confirm:"Atur ulang semua level? Perubahanmu akan hilang.",
     at_least_one:"Diperlukan minimal satu level.",
     import_ok:"Berhasil mengimpor {n} level.", import_fail:"Gagal mengimpor: {msg}",
+    hats_button:"Editor Topi", choose_hat:"Pilih topi", back:"← Kembali",
     footer_generated_by:"Dibuat oleh",
     footer_offline:"Aplikasi ini bekerja offline. Simpan sebagai berkas .html."
   },
@@ -1413,6 +1479,7 @@ const TRANSLATIONS = {
     reset_confirm:"Zresetować wszystkie poziomy? Twoje zmiany zostaną utracone.",
     at_least_one:"Wymagany jest przynajmniej jeden poziom.",
     import_ok:"Zaimportowano {n} poziom(ów).", import_fail:"Import nie powiódł się: {msg}",
+    hats_button:"Edytor czapek", choose_hat:"Wybierz czapkę", back:"← Wstecz",
     footer_generated_by:"Utworzone przez",
     footer_offline:"Ta aplikacja działa offline. Zapisz ją jako plik .html."
   },
@@ -1599,15 +1666,43 @@ const _HAT_CAP_S = '<svg xmlns="http://www.w3.org/2000/svg" width="40" height="4
 const _HAT_CAP_E = '<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"><path d="M 22 28 L 36 30 L 36 33 L 22 30 Z" fill="#1f4a80"/><path d="M 8 28 Q 8 12 22 12 Q 32 12 32 28 Z" fill="#2a5fa0"/><circle cx="20" cy="14" r="1.5" fill="#fff"/></svg>';
 const _HAT_CAP_N = '<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"><path d="M 8 28 Q 8 12 22 12 Q 32 12 32 28 Z" fill="#1a4878"/><circle cx="20" cy="14" r="1.5" fill="#fff" opacity="0.6"/></svg>';
 const _HAT_CAP_W = '<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"><path d="M 18 28 L 4 30 L 4 33 L 18 30 Z" fill="#1f4a80"/><path d="M 8 28 Q 8 12 22 12 Q 32 12 32 28 Z" fill="#2a5fa0"/><circle cx="20" cy="14" r="1.5" fill="#fff"/></svg>';
+const _HAT_PARTY = '<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"><ellipse cx="20" cy="32" rx="11" ry="2.5" fill="#8a1a55"/><path d="M 10 32 L 20 4 L 30 32 Z" fill="#e040a0"/><path d="M 10 30 L 14 27 L 18 30 L 22 27 L 26 30 L 30 27 L 30 32 L 10 32 Z" fill="#ffe070"/><circle cx="20" cy="5" r="2.8" fill="#ffffff"/></svg>';
+const _HAT_BOWLER = '<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"><ellipse cx="20" cy="29" rx="15" ry="2.5" fill="#1a1a1a"/><path d="M 11 28 Q 11 13 20 13 Q 29 13 29 28 Z" fill="#2a2a2a"/><ellipse cx="20" cy="13" rx="9" ry="2" fill="#1a1a1a"/><rect x="11" y="25" width="18" height="2.5" fill="#5a4030"/></svg>';
+const _HAT_HALO = '<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"><ellipse cx="20" cy="16" rx="13" ry="3.5" fill="none" stroke="#f5cc40" stroke-width="2.5"/><ellipse cx="20" cy="16" rx="10" ry="2.2" fill="none" stroke="#ffe8a0" stroke-width="1" opacity="0.8"/></svg>';
+const _HAT_DEVIL = '<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"><path d="M 14 30 Q 9 22 8 10 Q 14 18 18 30 Z" fill="#c01818" stroke="#5a0808" stroke-width="0.7" stroke-linejoin="round"/><path d="M 26 30 Q 31 22 32 10 Q 26 18 22 30 Z" fill="#c01818" stroke="#5a0808" stroke-width="0.7" stroke-linejoin="round"/><path d="M 12 18 Q 11 15 10.5 12" fill="none" stroke="#e85050" stroke-width="0.6"/><path d="M 28 18 Q 29 15 29.5 12" fill="none" stroke="#e85050" stroke-width="0.6"/></svg>';
+const _HAT_SOMBRERO = '<svg xmlns="http://www.w3.org/2000/svg" width="60" height="40" viewBox="0 0 60 40"><ellipse cx="30" cy="30" rx="29" ry="4" fill="#5a3010"/><ellipse cx="30" cy="28" rx="29" ry="4" fill="#a87040"/><path d="M 22 30 Q 22 6 30 6 Q 38 6 38 30 Z" fill="#a87040"/><ellipse cx="30" cy="6" rx="6" ry="1.6" fill="#7a5020"/><rect x="22" y="22" width="16" height="2.5" fill="#5a3010"/><circle cx="25" cy="23" r="1" fill="#f5cc40"/><circle cx="30" cy="23" r="1" fill="#c25050"/><circle cx="35" cy="23" r="1" fill="#3a7fc7"/></svg>';
+const _HAT_WITCH = '<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"><ellipse cx="20" cy="32" rx="19" ry="3.5" fill="#0e0820"/><path d="M 8 30 Q 14 12 25 4 Q 29 1 25 8 L 32 30 Z" fill="#2a1a55"/><rect x="8" y="26" width="24" height="4" fill="#0e0820"/><rect x="17" y="26" width="6" height="4" fill="#f5cc40"/><rect x="19" y="27" width="2" height="2" fill="#a87040"/></svg>';
+const _HAT_FEZ = '<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"><path d="M 12 28 L 14 14 L 26 14 L 28 28 Z" fill="#c2483a"/><ellipse cx="20" cy="14" rx="6" ry="1.8" fill="#a23020"/><ellipse cx="20" cy="28" rx="8" ry="1.8" fill="#a23020"/><circle cx="20" cy="13" r="1.3" fill="#1a1a1a"/><path d="M 20 14 Q 27 13 27.5 23" fill="none" stroke="#1a1a1a" stroke-width="1.2"/><ellipse cx="27.5" cy="24" rx="1.5" ry="2.5" fill="#1a1a1a"/></svg>';
+const _HAT_ANTLERS = '<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"><g fill="none" stroke="#6a4020" stroke-width="2" stroke-linecap="round"><path d="M 16 28 L 12 16"/><path d="M 12 16 L 7 13"/><path d="M 12 16 L 8 20"/><path d="M 14 22 L 10 22"/><path d="M 24 28 L 28 16"/><path d="M 28 16 L 33 13"/><path d="M 28 16 L 32 20"/><path d="M 26 22 L 30 22"/></g></svg>';
+const _HAT_BUNNY_FRONT = '<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"><ellipse cx="14" cy="22" rx="3" ry="10" fill="#f5f5f5" stroke="#888" stroke-width="0.7"/><ellipse cx="14" cy="23" rx="1.5" ry="7" fill="#f0a3c8"/><ellipse cx="26" cy="22" rx="3" ry="10" fill="#f5f5f5" stroke="#888" stroke-width="0.7"/><ellipse cx="26" cy="23" rx="1.5" ry="7" fill="#f0a3c8"/></svg>';
+const _HAT_BUNNY_BACK = '<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"><ellipse cx="14" cy="22" rx="3" ry="10" fill="#f5f5f5" stroke="#888" stroke-width="0.7"/><ellipse cx="26" cy="22" rx="3" ry="10" fill="#f5f5f5" stroke="#888" stroke-width="0.7"/></svg>';
+const _HAT_CAT_FRONT = '<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"><path d="M 8 33 L 12 19 L 18 31 Z" fill="#3a3a3a"/><path d="M 11 31 L 13 22 L 16 30 Z" fill="#f0a3c8"/><path d="M 32 33 L 28 19 L 22 31 Z" fill="#3a3a3a"/><path d="M 29 31 L 27 22 L 24 30 Z" fill="#f0a3c8"/></svg>';
+const _HAT_CAT_BACK = '<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"><path d="M 8 33 L 12 19 L 18 31 Z" fill="#3a3a3a"/><path d="M 32 33 L 28 19 L 22 31 Z" fill="#3a3a3a"/></svg>';
+const _HAT_DIVING_E = '<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 60 60"><ellipse cx="30" cy="52" rx="25" ry="4" fill="#5a3010"/><ellipse cx="30" cy="50" rx="25" ry="4" fill="#7a5020"/><path d="M 14 52 Q 4 50 4 32 Q 4 12 30 12 Q 56 12 56 32 Q 56 50 46 52 Z" fill="#a87040"/><ellipse cx="30" cy="12" rx="11" ry="2.5" fill="#7a5020"/><circle cx="34" cy="32" r="11" fill="#3a7fc7" stroke="#7a5020" stroke-width="2.5"/><circle cx="38" cy="28" r="4" fill="#ffffff" opacity="0.5"/><rect x="14.5" y="22" width="2" height="22" fill="#7a5020"/><rect x="43.5" y="22" width="2" height="22" fill="#7a5020"/><rect x="27" y="4" width="6" height="8" fill="#7a5020"/><circle cx="30" cy="3.5" r="2.5" fill="#c25050"/></svg>';
+const _HAT_DIVING_S = '<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 60 60"><ellipse cx="30" cy="52" rx="25" ry="4" fill="#5a3010"/><ellipse cx="30" cy="50" rx="25" ry="4" fill="#7a5020"/><path d="M 14 52 Q 4 50 4 32 Q 4 12 30 12 Q 56 12 56 32 Q 56 50 46 52 Z" fill="#a87040"/><ellipse cx="30" cy="12" rx="11" ry="2.5" fill="#7a5020"/><circle cx="26" cy="32" r="11" fill="#3a7fc7" stroke="#7a5020" stroke-width="2.5"/><circle cx="30" cy="28" r="4" fill="#ffffff" opacity="0.5"/><rect x="14.5" y="22" width="2" height="22" fill="#7a5020"/><rect x="43.5" y="22" width="2" height="22" fill="#7a5020"/><rect x="27" y="4" width="6" height="8" fill="#7a5020"/><circle cx="30" cy="3.5" r="2.5" fill="#c25050"/></svg>';
+const _HAT_DIVING_BACK = '<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 60 60"><ellipse cx="30" cy="52" rx="25" ry="4" fill="#5a3010"/><ellipse cx="30" cy="50" rx="25" ry="4" fill="#7a5020"/><path d="M 14 52 Q 4 50 4 32 Q 4 12 30 12 Q 56 12 56 32 Q 56 50 46 52 Z" fill="#a87040"/><ellipse cx="30" cy="12" rx="11" ry="2.5" fill="#7a5020"/><rect x="14.5" y="22" width="2" height="22" fill="#7a5020"/><rect x="43.5" y="22" width="2" height="22" fill="#7a5020"/><rect x="27" y="4" width="6" height="8" fill="#7a5020"/><circle cx="30" cy="3.5" r="2.5" fill="#c25050"/></svg>';
+const _HAT_VIKING = '<svg xmlns="http://www.w3.org/2000/svg" width="50" height="40" viewBox="-5 0 50 40"><ellipse cx="20" cy="33" rx="14" ry="2.8" fill="#3a2010"/><path d="M 8 32 Q 8 16 20 16 Q 32 16 32 32 Z" fill="#8b5a2b"/><ellipse cx="20" cy="16" rx="8" ry="1.6" fill="#5a3010"/><rect x="8" y="30" width="24" height="3" fill="#5a3010"/><path d="M 9 23 Q -2 22 -5 4 Q 5 14 14 22 Z" fill="#e8d4a0" stroke="#7a5020" stroke-width="0.8"/><path d="M 31 23 Q 42 22 45 4 Q 35 14 26 22 Z" fill="#e8d4a0" stroke="#7a5020" stroke-width="0.8"/><circle cx="20" cy="25" r="2.2" fill="#5a3010"/></svg>';
 function sameAll(svg) { return { N: svg, E: svg, S: svg, W: svg }; }
 const HATS = {
-  none:   { name: 'None',         svg: sameAll('') },
-  top:    { name: 'Top Hat',      svg: sameAll(_HAT_TOP) },
-  wizard: { name: 'Wizard Hat',   svg: sameAll(_HAT_WIZ) },
-  crown:  { name: 'Crown',        svg: sameAll(_HAT_CROWN) },
-  beanie: { name: 'Beanie',       svg: sameAll(_HAT_BEANIE) },
-  cap:    { name: 'Baseball Cap', svg: { N: _HAT_CAP_N, E: _HAT_CAP_E, S: _HAT_CAP_S, W: _HAT_CAP_W } },
-  cowboy: { name: 'Cowboy Hat',   svg: sameAll(_HAT_COWBOY) },
+  none:        { name: 'None',            svg: sameAll('') },
+  top:         { name: 'Top Hat',         svg: sameAll(_HAT_TOP) },
+  wizard:      { name: 'Wizard Hat',      svg: sameAll(_HAT_WIZ) },
+  crown:       { name: 'Crown',           svg: sameAll(_HAT_CROWN) },
+  beanie:      { name: 'Beanie',          svg: sameAll(_HAT_BEANIE) },
+  cap:         { name: 'Baseball Cap',    svg: { N: _HAT_CAP_N, E: _HAT_CAP_E, S: _HAT_CAP_S, W: _HAT_CAP_W } },
+  cowboy:      { name: 'Cowboy Hat',      svg: sameAll(_HAT_COWBOY) },
+  party:       { name: 'Party Hat',       svg: sameAll(_HAT_PARTY) },
+  bowler:      { name: 'Bowler',          svg: sameAll(_HAT_BOWLER) },
+  halo:        { name: 'Halo',            svg: sameAll(_HAT_HALO) },
+  devil:       { name: 'Devil Horns',     svg: sameAll(_HAT_DEVIL) },
+  sombrero:    { name: 'Sombrero',        svg: sameAll(_HAT_SOMBRERO) },
+  witch:       { name: 'Witch Hat',       svg: sameAll(_HAT_WITCH) },
+  fez:         { name: 'Fez',             svg: sameAll(_HAT_FEZ) },
+  antlers:     { name: 'Antlers',         svg: sameAll(_HAT_ANTLERS) },
+  bunny:       { name: 'Bunny Ears',      svg: { N: _HAT_BUNNY_BACK, E: _HAT_BUNNY_FRONT, S: _HAT_BUNNY_FRONT, W: _HAT_BUNNY_BACK } },
+  cat:         { name: 'Cat Ears',        svg: { N: _HAT_CAT_BACK,   E: _HAT_CAT_FRONT,   S: _HAT_CAT_FRONT,   W: _HAT_CAT_BACK } },
+  diving:      { name: 'Diving Helmet',   svg: { N: _HAT_DIVING_BACK, E: _HAT_DIVING_E, S: _HAT_DIVING_S, W: _HAT_DIVING_BACK }, offsetY: 18 },
+  viking:      { name: 'Viking Helmet',   svg: sameAll(_HAT_VIKING) },
 };
 
 let currentHat = 'none';
@@ -1736,8 +1831,10 @@ function drawBot(ctx, state, c, hatId, skin = 'default') {
   const dir = state.facingKey || 'S';
   const img = HAT_IMAGES[hatId] && HAT_IMAGES[hatId][dir];
   if (img && img.complete && img.naturalWidth > 0) {
-    const w = 40, h = 40;
-    ctx.drawImage(img, -w/2, -52 - h + 12, w, h);
+    const w = img.naturalWidth, h = img.naturalHeight;
+    const hat = HATS[hatId];
+    const dy = (hat && hat.offsetY) || 0;
+    ctx.drawImage(img, -w/2, -52 - h + 12 + dy, w, h);
   }
   ctx.restore();
 }
@@ -2997,6 +3094,8 @@ const COLOR_PRESETS = {
   Candy:      { tile:'#f0a3c8', goal:'#9050d0', lit:'#fffa70', bg:'#2a1530', bot:'#f8d4ea' },
   Monochrome: { tile:'#888888', goal:'#dddddd', lit:'#ffffff', bg:'#1a1a1a', bot:'#bbbbbb' },
   Lava:       { tile:'#5a3030', goal:'#902020', lit:'#ffb060', bg:'#15080a', bot:'#e8c4a0' },
+  'Circuit Board': { tile:'#1a4d2e', goal:'#c89a4a', lit:'#ffe070', bg:'#08221a', bot:'#b0bcb0' },
+  Cyberpunk:  { tile:'#2a1a55', goal:'#ff3ec8', lit:'#22f0ff', bg:'#0a0520', bot:'#ffe070' },
 };
 
 function hex6(c) {
@@ -3028,24 +3127,35 @@ function applyColorScheme(p) {
   r.setProperty('--bot-body',   p.bot);
   r.setProperty('--bot-edge',   darken(p.bot, 0.55));
 }
-function readColorInputs() {
+const COLOR_PANEL_PREFIXES = ['color', 'hats-color'];
+function readColorInputsFrom(prefix) {
   return {
-    tile: document.getElementById('color-tile').value,
-    goal: document.getElementById('color-goal').value,
-    lit:  document.getElementById('color-lit').value,
-    bg:   document.getElementById('color-bg').value,
-    bot:  document.getElementById('color-bot').value,
+    tile: document.getElementById(prefix + '-tile').value,
+    goal: document.getElementById(prefix + '-goal').value,
+    lit:  document.getElementById(prefix + '-lit').value,
+    bg:   document.getElementById(prefix + '-bg').value,
+    bot:  document.getElementById(prefix + '-bot').value,
   };
 }
-function setColorInputs(p) {
-  document.getElementById('color-tile').value = hex6(p.tile);
-  document.getElementById('color-goal').value = hex6(p.goal);
-  document.getElementById('color-lit').value  = hex6(p.lit);
-  document.getElementById('color-bg').value   = hex6(p.bg);
-  document.getElementById('color-bot').value  = hex6(p.bot);
+function setColorInputsFor(prefix, p) {
+  for (const key of ['tile','goal','lit','bg','bot']) {
+    const v = hex6(p[key]);
+    const picker = document.getElementById(prefix + '-' + key);
+    const hexEl = document.getElementById(prefix + '-' + key + '-hex');
+    if (picker) picker.value = v;
+    if (hexEl) { hexEl.value = v; hexEl.classList.remove('invalid'); }
+  }
 }
-function initColorControls() {
-  const sel = document.getElementById('color-preset');
+function setAllColorInputs(p) {
+  for (const prefix of COLOR_PANEL_PREFIXES) setColorInputsFor(prefix, p);
+}
+function setAllPresetSelects(value) {
+  for (const prefix of COLOR_PANEL_PREFIXES) {
+    const sel = document.getElementById(prefix + '-preset');
+    if (sel) sel.value = value;
+  }
+}
+function populatePresetSelect(sel) {
   sel.innerHTML = '';
   // "Custom" placeholder (selected when user tweaks individual colors)
   const customOpt = document.createElement('option');
@@ -3058,27 +3168,60 @@ function initColorControls() {
     opt.textContent = name;
     sel.appendChild(opt);
   }
-  // Sync inputs to currently-active CSS values
-  setColorInputs({
+}
+function setupColorPanel(prefix) {
+  const sel = document.getElementById(prefix + '-preset');
+  if (!sel) return;
+  populatePresetSelect(sel);
+  sel.addEventListener('change', (e) => {
+    const p = COLOR_PRESETS[e.target.value];
+    if (!p) return;
+    setAllColorInputs(p);
+    applyColorScheme(p);
+    setAllPresetSelects(e.target.value);
+  });
+  ['tile','goal','lit','bg','bot'].forEach(key => {
+    const picker = document.getElementById(prefix + '-' + key);
+    const hexEl = document.getElementById(prefix + '-' + key + '-hex');
+    if (!picker || !hexEl) return;
+    picker.addEventListener('input', () => {
+      hexEl.value = picker.value.toLowerCase();
+      hexEl.classList.remove('invalid');
+      const inputs = readColorInputsFrom(prefix);
+      setAllColorInputs(inputs);
+      applyColorScheme(inputs);
+      setAllPresetSelects('__custom__');
+    });
+    hexEl.addEventListener('input', () => {
+      const v = hexEl.value.trim();
+      if (/^#?[0-9a-f]{6}$/i.test(v) || /^#?[0-9a-f]{3}$/i.test(v)) {
+        const normalized = hex6(v.startsWith('#') ? v : '#' + v);
+        picker.value = normalized;
+        hexEl.classList.remove('invalid');
+        const inputs = readColorInputsFrom(prefix);
+        setAllColorInputs(inputs);
+        applyColorScheme(inputs);
+        setAllPresetSelects('__custom__');
+      } else {
+        hexEl.classList.add('invalid');
+      }
+    });
+    hexEl.addEventListener('blur', () => {
+      hexEl.value = picker.value.toLowerCase();
+      hexEl.classList.remove('invalid');
+    });
+  });
+}
+function initColorControls() {
+  setAllColorInputs({
     tile: hex6(getCss('--tile-top')),
     goal: hex6(getCss('--goal-top')),
     lit:  hex6(getCss('--lit-top')),
     bg:   hex6(getCss('--bg')),
     bot:  hex6(getCss('--bot-body')),
   });
-  sel.value = 'Default';
-  sel.addEventListener('change', (e) => {
-    const p = COLOR_PRESETS[e.target.value];
-    if (!p) return;
-    setColorInputs(p);
-    applyColorScheme(p);
-  });
-  ['tile','goal','lit','bg','bot'].forEach(key => {
-    document.getElementById('color-' + key).addEventListener('input', () => {
-      applyColorScheme(readColorInputs());
-      sel.value = '__custom__';
-    });
-  });
+  for (const prefix of COLOR_PANEL_PREFIXES) setupColorPanel(prefix);
+  setAllPresetSelects('Default');
 }
 
 // ============================================================================
