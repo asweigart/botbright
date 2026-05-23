@@ -1,5 +1,9 @@
 # Botbright
 
+**🇬🇧 English** · [🇪🇸 Español](index_es.md) · [🇫🇷 Français](index_fr.md) · [🇩🇪 Deutsch](index_de.md) · [🇮🇹 Italiano](index_it.md) · [🇵🇹 Português](index_pt.md) · [🇷🇺 Русский](index_ru.md) · [🇨🇳 中文](index_zh.md) · [🇯🇵 日本語](index_ja.md) · [🇰🇷 한국어](index_ko.md) · [🇮🇳 हिन्दी](index_hi.md) · [🇧🇩 বাংলা](index_bn.md) · [🇻🇳 Tiếng Việt](index_vi.md) · [🇸🇦 العربية](index_ar.md) · [🇹🇭 ไทย](index_th.md) · [🇵🇭 Tagalog](index_tl.md) · [🇳🇴 Norsk](index_no.md) · [🇳🇱 Nederlands](index_nl.md) · [🇸🇪 Svenska](index_sv.md) · [🇹🇷 Türkçe](index_tr.md) · [🇰🇪 Kiswahili](index_sw.md) · [🇮🇩 Bahasa Indonesia](index_id.md) · [🇵🇱 Polski](index_pl.md)
+
+---
+
 Botbright is a single-file JavaScript clone of the Flash puzzle game *Lightbot*. Program an isometric robot to walk a 3D-tile grid and light up the blue goal tiles. Drag instruction tiles into the bot's memory, press **Run**, and watch your program execute.
 
 The entire game is one HTML file (`botbright.html`) with inline CSS and JavaScript — no build step, no external dependencies, no network calls. Open the file in any modern browser and play. Save it to your hard drive and it keeps working offline forever.
@@ -22,14 +26,14 @@ The bot has three memory areas:
 
 Drag instruction tiles from the palette into memory. Reorder by dragging between slots. Drag a tile off any slot to delete it.
 
-| Instruction  | What it does                                                              |
-|--------------|---------------------------------------------------------------------------|
-| Forward      | Step onto the tile in front, if it's the same height                      |
-| Turn Left    | Rotate 90° counter-clockwise                                              |
-| Turn Right   | Rotate 90° clockwise                                                      |
-| Jump         | Hop up one level, or hop down any number of levels                        |
-| Light        | Toggle the goal tile under the bot                                        |
-| Call F1 / F2 | Push that function onto the call stack (recursion allowed, with limits)   |
+| Instruction | What it does |
+|-------------|------------|
+| Forward | Step onto the tile in front, if it's the same height |
+| Turn Left | Rotate 90° counter-clockwise |
+| Turn Right | Rotate 90° clockwise |
+| Jump | Hop up one level, or hop down any number of levels |
+| Light | Toggle the goal tile under the bot |
+| Call F1 / F2 | Push that function onto the call stack (recursion allowed, with limits) |
 
 A level is complete when every goal tile is lit yellow.
 
