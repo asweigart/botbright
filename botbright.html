@@ -152,7 +152,9 @@ html, body {
 }
 .level-card canvas {
   width: 100%;
-  height: 120px;
+  /* Match the canvas's intrinsic 360x240 so wide (mobile) cards don't stretch the image. */
+  aspect-ratio: 3 / 2;
+  height: auto;
   background: var(--panel-2);
   border-radius: 8px;
 }
@@ -295,6 +297,19 @@ button.active {
 }
 .tile.dragging {
   opacity: 0.4;
+}
+.tile.selected {
+  outline: 3px solid var(--text);
+  outline-offset: 1px;
+  box-shadow: 0 0 8px var(--text);
+}
+.tile.preview {
+  cursor: pointer;
+  animation: preview-pulse 1.4s ease-in-out infinite;
+}
+@keyframes preview-pulse {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.55; }
 }
 .tile svg {
   width: 70%;
@@ -2528,6 +2543,7 @@ function collapseLevel(level) {
 }
 
 function resetLevel(keepPrograms = true) {
+  selectedInstr = null;
   const L = LEVELS[gameState.levelIdx];
   gameState.level = expandLevel(L);
   const [sx, sy] = gameState.level.startPos;
@@ -2595,6 +2611,11 @@ function renderMemory() {
         const t = makeTileEl(list[i]);
         t.dataset.source = 'memory';
         slot.appendChild(t);
+      } else if (selectedInstr && !gameState.running && i === list.length) {
+        // Faint preview at the end of the program; tap it to append (see addSelectedTo).
+        const t = makeTileEl(selectedInstr);
+        t.classList.add('preview');
+        slot.appendChild(t);
       }
       // Highlight currently executing
       if (gameState.currentSlot && gameState.currentSlot.prog === prog && gameState.currentSlot.index === i) {
@@ -2613,6 +2634,7 @@ function renderPalette() {
     slot.className = 'slot';
     const t = makeTileEl(instr);
     t.dataset.source = 'palette';
+    if (instr === selectedInstr) t.classList.add('selected');
     slot.appendChild(t);
     p.appendChild(slot);
   }
@@ -2620,6 +2642,10 @@ function renderPalette() {
 
 // Drag handling for tiles (pointer events; works for mouse and touch).
 let drag = null; // {instr, source, sourceProg, sourceIdx, ghost, lastTarget}
+// Tap-to-place: the palette instruction currently selected for tap placement,
+// or null. While set, a faint preview tile is shown at the end of each program;
+// tapping a preview appends the instruction there (no dragging needed — handy on mobile).
+let selectedInstr = null;
 const ghostEl = document.getElementById('ghost-tile');
 
 function setupDragHandlers(rootEl) {
@@ -2630,6 +2656,11 @@ function onPointerDown(e) {
   if (!tile) return;
   if (gameState.running) return;
   e.preventDefault();
+  // Tapping a faint preview appends the selected instruction to that program.
+  if (tile.classList.contains('preview')) {
+    addSelectedTo(tile.parentElement.dataset.prog);
+    return;
+  }
   const source = tile.dataset.source || 'palette';
   const instr = tile.dataset.instr;
   let sourceProg = null, sourceIdx = -1;
@@ -2678,6 +2709,14 @@ function onPointerUp(e) {
   window.removeEventListener('pointermove', onPointerMove);
   window.removeEventListener('pointerup', onPointerUp);
   window.removeEventListener('pointercancel', onPointerUp);
+  // A tap (no real movement) on a palette tile toggles tap-to-place selection.
+  if (drag.source === 'palette' && Math.hypot(e.clientX - drag.x, e.clientY - drag.y) < 6) {
+    toggleSelect(drag.instr);
+    ghostEl.style.display = 'none';
+    ghostEl.innerHTML = '';
+    drag = null;
+    return;
+  }
   const el = elementUnder(e.clientX, e.clientY);
   const slot = el ? el.closest('.slot') : null;
   if (drag.lastTarget) drag.lastTarget.classList.remove('drop-target');
@@ -2696,6 +2735,18 @@ function onPointerUp(e) {
   ghostEl.style.display = 'none';
   ghostEl.innerHTML = '';
   drag = null;
+  renderMemory();
+}
+function toggleSelect(instr) {
+  selectedInstr = (selectedInstr === instr) ? null : instr;
+  renderPalette();
+  renderMemory();
+}
+function addSelectedTo(prog) {
+  if (!selectedInstr) return;
+  const dst = gameState.programs[prog];
+  if (dst.length >= PROGRAM_CAPS[prog]) return;
+  dst.push(selectedInstr);
   renderMemory();
 }
 function compactProgram(prog) {
